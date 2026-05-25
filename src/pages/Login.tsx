@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import logo from '@/assets/logo.jpeg';
+import logo from '@/assets/mainlogo.png';
 import axios from "axios";
 import BASE_URL from "@/Config/Api";
 import { Eye, EyeOff } from "lucide-react";
