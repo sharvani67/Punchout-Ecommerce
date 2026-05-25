@@ -9,136 +9,124 @@ import AdminLayout from "./components/AdminLayout";
 import ScrollToTop from "./components/ScrollToTop";
 import NotFound from "./pages/NotFound";
 import WhatsAppFloat from "./WhatsAppFloat";
+
 import Login from "./pages/Login";
 import ChangePassword from "./pages/ForgotPassword";
 import ProtectedRoute from "./test/ProtectedRoute";
+
 import ProductTable from "./pages/ProductTable";
 import ProductForm from "./pages/ProductsForm";
-import Home from "./pages/Home";
-import Products from "./pages/Products";
 import CategoryTable from "./pages/CategoryTable";
 import CategoryForm from "./pages/CategoryForm";
 
+import Home from "./pages/Home";
+import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import EditCategory from "./pages/EditCategory";
+import EditProduct from "./pages/EditProduct";
+
 import { CartProvider } from "./context/CartContext";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      
-      <CartProvider> {/* 👈 WRAP WITH CART PROVIDER */}
-        <BrowserRouter>
-          <ScrollToTop />
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
 
-          <Routes>
-            {/* ✅ PUBLIC ROUTES */}
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
-            </Route>
+        <CartProvider>
+          <BrowserRouter>
+            <ScrollToTop />
 
-            {/* ✅ ADMIN ROUTES */}
-            <Route element={<AdminLayout />}>
-              <Route path="/admin" element={<Login />} />
-              
-              <Route
-                path="/admin/productstable"
-                element={
-                  <ProtectedRoute>
-                    <ProductTable />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/add-product"
-                element={
-                  <ProtectedRoute>
-                    <ProductForm/>
-                  </ProtectedRoute>
-                }
-              />
-              
-              <Route path="/forgot-password" element={<ChangePassword />} />
-            </Route>
+            <Routes>
+              {/* ✅ PUBLIC ROUTES */}
+              <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+              </Route>
 
-            {/* ✅ 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              {/* ✅ ADMIN ROUTES */}
+              <Route element={<AdminLayout />}>
+                {/* Login */}
+                <Route path="/admin" element={<Login />} />
 
-          {/* ✅ ADMIN ROUTES */}
-          <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<Login />} />
-            
-            {/* Admin Blog Management - Protected */}
-            
+                {/* Products */}
+                <Route
+                  path="/admin/productstable"
+                  element={
+                    <ProtectedRoute>
+                      <ProductTable />
+                    </ProtectedRoute>
+                  }
+                />
 
+                <Route
+                  path="/admin/add-product"
+                  element={
+                    <ProtectedRoute>
+                      <ProductForm />
+                    </ProtectedRoute>
+                  }
+                />
 
+                <Route
+  path="/admin/edit-product/:id"
+  element={
+    <ProtectedRoute>
+      <EditProduct />
+    </ProtectedRoute>
+  }
+/>
 
+                {/* Categories */}
+                <Route
+                  path="/admin/categories-table"
+                  element={
+                    <ProtectedRoute>
+                      <CategoryTable />
+                    </ProtectedRoute>
+                  }
+                />
 
-           
+                <Route
+                  path="/admin/add-product-category"
+                  element={
+                    <ProtectedRoute>
+                      <CategoryForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+  path="/admin/edit-category/:id"
+  element={
+    <ProtectedRoute>
+      <EditCategory />
+    </ProtectedRoute>
+  }
+/>
 
-            
-            {/* Contacts Management - Protected */}
-            <Route
-              path="/admin/productstable"
-              element={
-                <ProtectedRoute>
-                  <ProductTable />
-                </ProtectedRoute>
-              }
-            />
+                {/* Forgot Password */}
+                <Route
+                  path="/forgot-password"
+                  element={<ChangePassword />}
+                />
+              </Route>
 
-             <Route
-              path="/admin/categories-table"
-              element={
-                <ProtectedRoute>
-                  <CategoryTable />
-                </ProtectedRoute>
-              }
-            />
+              {/* ✅ 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
-            <Route
-              path="/admin/add-product"
-              element={
-                <ProtectedRoute>
-                  <ProductForm/>
-                </ProtectedRoute>
-              }
-            />
-
-             <Route
-              path="/admin/add-product-category"
-              element={
-                <ProtectedRoute>
-                  <CategoryForm/>
-                </ProtectedRoute>
-              }
-            />
-            
-            {/* Forgot Password */}
-            <Route path="/forgot-password" element={<ChangePassword />} />
-          </Route>
-
-          {/* ✅ 404 */}
-          <Route path="*" element={<NotFound />} />
-
-        </Routes>
-
-        <WhatsAppFloat />
-
-      </BrowserRouter>
-          <WhatsAppFloat />
-        </BrowserRouter>
-      </CartProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+            <WhatsAppFloat />
+          </BrowserRouter>
+        </CartProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
