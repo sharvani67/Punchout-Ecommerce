@@ -9,8 +9,8 @@ export default function Layout() {
       <ScrollProgress />
       <Header />
       
-      <main className="flex-1 pt-16">
-        <Outlet /> {/* 👈 THIS IS REQUIRED */}
+      <main className="flex-1 pt-20">
+        <Outlet />
       </main>
 
       <Footer />
