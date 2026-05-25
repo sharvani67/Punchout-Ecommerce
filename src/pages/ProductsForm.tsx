@@ -1,63 +1,122 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminNavbar from "@/components/AdminNavbar";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "@/Config/Api";
 
+interface Category {
+  id: number;
+  category_name: string;
+}
+
 interface Product {
   product_name: string;
-  model_no: string;
-  category: string;
-  brand: string;
   product_code: string;
-  color: string;
-  units: string;
-  dimensions: string;
+  product_category_id: string;
+  product_brand: string;
   price: string;
-  description: string;
-  quantity: string;
+  available_stock: string;
+  dimensions: string;
+  specifications: string;
+  weight: string;
+  color: string;
+  discount: string;
+  product_description: string;
+  warranty: string;
 }
 
 export default function ProductForm() {
   const navigate = useNavigate();
 
+  const [categories, setCategories] = useState<Category[]>([]);
+
   const [form, setForm] = useState<Product>({
     product_name: "",
-    model_no: "",
-    category: "",
-    brand: "",
     product_code: "",
-    color: "",
-    units: "",
-    dimensions: "",
+    product_category_id: "",
+    product_brand: "",
     price: "",
-    description: "",
-    quantity: "",
+    available_stock: "",
+    dimensions: "",
+    specifications: "",
+    weight: "",
+    color: "",
+    discount: "",
+    product_description: "",
+    warranty: "",
   });
 
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [pdf, setPdf] = useState<File | null>(null);
+
+  const [preview, setPreview] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(false);
 
-  // Handle Change
+  // =========================================
+  // FETCH CATEGORIES
+  // =========================================
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/categories`);
+      setCategories(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // =========================================
+  // HANDLE CHANGE
+  // =========================================
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Image
+  // =========================================
+  // MULTIPLE IMAGES
+  // =========================================
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+
+    setImages(files);
+
+    const imagePreviews = files.map((file) =>
+      URL.createObjectURL(file)
+    );
+
+    setPreview(imagePreviews);
+  };
+
+  // =========================================
+  // PDF
+  // =========================================
+
+  const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
+      setPdf(file);
     }
   };
 
-  // Submit (API integrated from your first code)
+  // =========================================
+  // SUBMIT
+  // =========================================
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
 
     try {
@@ -67,17 +126,27 @@ export default function ProductForm() {
         data.append(key, value);
       });
 
-      if (image) {
-        data.append("product_images", image);
+      // Multiple Images
+      images.forEach((img) => {
+        data.append("product_images", img);
+      });
+
+      // PDF
+      if (pdf) {
+        data.append("product_details_pdf", pdf);
       }
 
-      await axios.post(`${BASE_URL}/api/products`, data);
+      await axios.post(`${BASE_URL}/api/products`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       alert("Product Added Successfully ✅");
 
       navigate("/admin/productstable");
     } catch (error) {
-      console.error(error);
+      console.log(error);
       alert("Error adding product ❌");
     } finally {
       setLoading(false);
@@ -88,17 +157,20 @@ export default function ProductForm() {
     <>
       <AdminNavbar />
 
-      <div className="pt-24 px-6 lg:px-12">
-        <h1 className="text-3xl font-bold mb-6">Add Product</h1>
+      <div className="pt-24 px-6 lg:px-12 pb-10">
+        <h1 className="text-3xl font-bold mb-6">
+          Add Product
+        </h1>
 
         <form
           onSubmit={handleSubmit}
-          className="w-full bg-white p-8 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="bg-white p-8 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {/* Product Name */}
           <div>
-            <label className="block mb-1 font-medium">Product Name</label>
+            <label className="label">Product Name</label>
             <input
+              type="text"
               name="product_name"
               value={form.product_name}
               onChange={handleChange}
@@ -107,78 +179,48 @@ export default function ProductForm() {
             />
           </div>
 
-          {/* Model No */}
+          {/* Product Code */}
           <div>
-            <label className="block mb-1 font-medium">Model No</label>
+            <label className="label">Product Code</label>
             <input
-              name="model_no"
-              value={form.model_no}
+              type="text"
+              name="product_code"
+              value={form.product_code}
               onChange={handleChange}
               className="input"
+              required
             />
           </div>
 
           {/* Category */}
           <div>
-            <label className="block mb-1 font-medium">Category</label>
-            <input
-              name="category"
-              value={form.category}
+            <label className="label">Product Category</label>
+
+            <select
+              name="product_category_id"
+              value={form.product_category_id}
               onChange={handleChange}
               className="input"
-            />
+              required
+            >
+              <option value="">Select Category</option>
+
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.category_name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Brand */}
           <div>
-            <label className="block mb-1 font-medium">Brand</label>
-            <input
-              name="brand"
-              value={form.brand}
-              onChange={handleChange}
-              className="input"
-            />
-          </div>
+            <label className="label">Product Brand</label>
 
-          {/* Product Code */}
-          <div>
-            <label className="block mb-1 font-medium">Product Code</label>
             <input
-              name="product_code"
-              value={form.product_code}
-              onChange={handleChange}
-              className="input"
-            />
-          </div>
-
-          {/* Color */}
-          <div>
-            <label className="block mb-1 font-medium">Color</label>
-            <input
-              name="color"
-              value={form.color}
-              onChange={handleChange}
-              className="input"
-            />
-          </div>
-
-          {/* Units */}
-          <div>
-            <label className="block mb-1 font-medium">Units</label>
-            <input
-              name="units"
-              value={form.units}
-              onChange={handleChange}
-              className="input"
-            />
-          </div>
-
-          {/* Dimensions */}
-          <div>
-            <label className="block mb-1 font-medium">Dimensions</label>
-            <input
-              name="dimensions"
-              value={form.dimensions}
+              type="text"
+              name="product_brand"
+              value={form.product_brand}
               onChange={handleChange}
               className="input"
             />
@@ -186,7 +228,8 @@ export default function ProductForm() {
 
           {/* Price */}
           <div>
-            <label className="block mb-1 font-medium">Price</label>
+            <label className="label">Price</label>
+
             <input
               type="number"
               name="price"
@@ -196,48 +239,153 @@ export default function ProductForm() {
             />
           </div>
 
-          {/* Quantity */}
+          {/* Stock */}
           <div>
-            <label className="block mb-1 font-medium">Quantity</label>
+            <label className="label">Available Stock</label>
+
             <input
               type="number"
-              name="quantity"
-              value={form.quantity}
+              name="available_stock"
+              value={form.available_stock}
               onChange={handleChange}
               className="input"
             />
           </div>
 
-          {/* Image Upload */}
-          <div className="md:col-span-2 lg:col-span-1">
-            <label className="block mb-1 font-medium">Product Image</label>
+          {/* Weight */}
+          <div>
+            <label className="label">Weight</label>
+
+            <input
+              type="text"
+              name="weight"
+              value={form.weight}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+
+          {/* Color */}
+          <div>
+            <label className="label">Color</label>
+
+            <input
+              type="text"
+              name="color"
+              value={form.color}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+
+          {/* Discount */}
+          <div>
+            <label className="label">Discount</label>
+
+            <input
+              type="number"
+              name="discount"
+              value={form.discount}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+
+          {/* Warranty */}
+          <div>
+            <label className="label">Warranty</label>
+
+            <input
+              type="text"
+              name="warranty"
+              value={form.warranty}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+
+          {/* Multiple Images */}
+          <div>
+            <label className="label">
+              Product Images
+            </label>
+
             <input
               type="file"
+              multiple
+              accept="image/*"
               onChange={handleImageChange}
               className="input"
             />
 
-            {preview && (
-              <img
-                src={preview}
-                className="mt-3 w-32 h-32 object-cover rounded-lg border"
-              />
-            )}
+            <div className="flex gap-2 mt-3 flex-wrap">
+              {preview.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt=""
+                  className="w-20 h-20 rounded-lg object-cover border"
+                />
+              ))}
+            </div>
           </div>
 
-          {/* Description */}
-          <div className="md:col-span-2 lg:col-span-3">
-            <label className="block mb-1 font-medium">Description</label>
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              rows={4}
+          {/* PDF */}
+          <div>
+            <label className="label">
+              Product Details PDF
+            </label>
+
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={handlePdfChange}
               className="input"
             />
           </div>
 
-          {/* Button */}
+          {/* Dimensions */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <label className="label">Dimensions</label>
+
+            <textarea
+              rows={3}
+              name="dimensions"
+              value={form.dimensions}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+
+          {/* Specifications */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <label className="label">Specifications</label>
+
+            <textarea
+              rows={4}
+              name="specifications"
+              value={form.specifications}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+
+          {/* Description */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <label className="label">
+              Product Description
+            </label>
+
+            <textarea
+              rows={5}
+              name="product_description"
+              value={form.product_description}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
+
+          {/* Submit */}
           <div className="md:col-span-2 lg:col-span-3">
             <button
               type="submit"
@@ -250,7 +398,7 @@ export default function ProductForm() {
         </form>
       </div>
 
-      {/* Reusable Input Style */}
+      {/* Styles */}
       <style>
         {`
           .input {
@@ -259,11 +407,17 @@ export default function ProductForm() {
             padding: 10px;
             border-radius: 10px;
             outline: none;
-            transition: 0.2s;
           }
+
           .input:focus {
             border-color: black;
             box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+          }
+
+          .label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
           }
         `}
       </style>

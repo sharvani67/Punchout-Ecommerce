@@ -8,6 +8,7 @@ import logo from '@/assets/logo.jpeg';
 const navItems = [
   { path: '/', label: 'Home' },
   { path: '/admin/productstable', label: 'Products' },
+  { path: '/admin/categories-table', label: 'Product Categories' },
 ];
 
 export default function AdminNavbar() {

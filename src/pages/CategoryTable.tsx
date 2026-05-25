@@ -1,40 +1,18 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminNavbar from "@/components/AdminNavbar";
-import { Pencil, Trash2, Plus, FileText } from "lucide-react";
+import { Pencil, Trash2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "@/Config/Api";
 
-interface Product {
+interface Category {
   id?: number;
-
-  product_name: string;
-
-  product_code: string;
-
   category_name: string;
-
-  product_brand: string;
-
-  product_images?: string;
-
-  product_details_pdf?: string;
-
-  price: string;
-
-  available_stock: string;
-
-  weight: string;
-
-  color: string;
-
-  discount: string;
-
-  warranty: string;
+  created_at?: string;
 }
 
-export default function ProductTable() {
-  const [products, setProducts] = useState<Product[]>([]);
+export default function CategoryTable() {
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const [search, setSearch] = useState("");
 
@@ -45,38 +23,47 @@ export default function ProductTable() {
   const itemsPerPage = 5;
 
   // =========================================
-  // FETCH PRODUCTS
+  // FETCH CATEGORIES
   // =========================================
 
-  const fetchProducts = async () => {
+  const fetchCategories = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/products`);
+      const res = await axios.get(
+        `${BASE_URL}/api/categories`
+      );
 
-      setProducts(res.data);
+      setCategories(res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchCategories();
   }, []);
 
   // =========================================
-  // DELETE PRODUCT
+  // DELETE CATEGORY
   // =========================================
 
   const handleDelete = async (id?: number) => {
     if (!id) return;
 
-    if (!confirm("Are you sure you want to delete?")) return;
+    if (
+      !confirm(
+        "Are you sure you want to delete this category?"
+      )
+    )
+      return;
 
     try {
-      await axios.delete(`${BASE_URL}/api/products/${id}`);
+      await axios.delete(
+        `${BASE_URL}/api/categories/${id}`
+      );
 
-      fetchProducts();
+      fetchCategories();
 
-      alert("Product deleted successfully");
+      alert("Category deleted successfully");
     } catch (err) {
       console.error(err);
     }
@@ -86,8 +73,8 @@ export default function ProductTable() {
   // SEARCH
   // =========================================
 
-  const filteredProducts = products.filter((p) =>
-    p.product_name
+  const filteredCategories = categories.filter((c) =>
+    c.category_name
       .toLowerCase()
       .includes(search.toLowerCase())
   );
@@ -97,15 +84,17 @@ export default function ProductTable() {
   // =========================================
 
   const totalPages = Math.ceil(
-    filteredProducts.length / itemsPerPage
+    filteredCategories.length / itemsPerPage
   );
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  const startIndex =
+    (currentPage - 1) * itemsPerPage;
 
-  const paginatedProducts = filteredProducts.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const paginatedCategories =
+    filteredCategories.slice(
+      startIndex,
+      startIndex + itemsPerPage
+    );
 
   return (
     <>
@@ -115,25 +104,25 @@ export default function ProductTable() {
         {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <h1 className="text-3xl font-bold">
-            Products
+            Categories
           </h1>
 
           <button
             onClick={() =>
-              navigate("/admin/add-product")
+              navigate("/admin/add-product-category")
             }
             className="flex items-center gap-2 bg-gradient-to-r from-pink-500 via-yellow-400 to-blue-500 text-white px-5 py-2 rounded-lg shadow hover:scale-105 transition"
           >
             <Plus size={18} />
 
-            Add Product
+            Add Category
           </button>
         </div>
 
         {/* SEARCH */}
         <input
           type="text"
-          placeholder="🔍 Search product..."
+          placeholder="🔍 Search category..."
           className="mb-4 w-full md:w-1/3 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
           value={search}
           onChange={(e) => {
@@ -144,29 +133,19 @@ export default function ProductTable() {
         />
 
         {/* TABLE */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-auto">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <table className="min-w-full text-sm">
             <thead className="bg-gradient-to-r from-gray-900 to-gray-700 text-white">
               <tr>
-                <th className="p-4">Image</th>
+                <th className="p-4">S.No</th>
 
-                <th className="p-4">Product Name</th>
+                <th className="p-4">
+                  Category Name
+                </th>
 
-                <th className="p-4">Code</th>
-
-                <th className="p-4">Category</th>
-
-                <th className="p-4">Brand</th>
-
-                <th className="p-4">Price</th>
-
-                <th className="p-4">Stock</th>
-
-                <th className="p-4">Color</th>
-
-                <th className="p-4">Warranty</th>
-
-                <th className="p-4">PDF</th>
+                <th className="p-4">
+                  Created Date
+                </th>
 
                 <th className="p-4 text-center">
                   Actions
@@ -175,95 +154,39 @@ export default function ProductTable() {
             </thead>
 
             <tbody>
-              {paginatedProducts.length > 0 ? (
-                paginatedProducts.map((p) => {
-                  // First Image
-                  const firstImage =
-                    p.product_images?.split(",")[0];
-
-                  return (
+              {paginatedCategories.length > 0 ? (
+                paginatedCategories.map(
+                  (category, index) => (
                     <tr
-                      key={p.id}
+                      key={category.id}
                       className="border-b hover:bg-gray-50 transition"
                     >
-                      {/* IMAGE */}
-                      <td className="p-4">
-                        {firstImage ? (
-                          <img
-                            src={`${BASE_URL}/uploads/products/${firstImage}`}
-                            alt=""
-                            className="w-14 h-14 rounded-lg object-cover border"
-                          />
-                        ) : (
-                          <span className="text-gray-400">
-                            No Image
-                          </span>
-                        )}
+                      {/* SERIAL NUMBER */}
+                      <td className="p-4 text-center">
+                        {startIndex + index + 1}
                       </td>
 
-                      {/* NAME */}
+                      {/* CATEGORY NAME */}
                       <td className="p-4 font-medium">
-                        {p.product_name}
+                        {category.category_name}
                       </td>
 
-                      {/* CODE */}
+                      {/* DATE */}
                       <td className="p-4">
-                        {p.product_code}
-                      </td>
-
-                      {/* CATEGORY */}
-                      <td className="p-4">
-                        {p.category_name}
-                      </td>
-
-                      {/* BRAND */}
-                      <td className="p-4">
-                        {p.product_brand}
-                      </td>
-
-                      {/* PRICE */}
-                      <td className="p-4 font-semibold text-green-600">
-                        ₹{p.price}
-                      </td>
-
-                      {/* STOCK */}
-                      <td className="p-4">
-                        {p.available_stock}
-                      </td>
-
-                      {/* COLOR */}
-                      <td className="p-4">
-                        {p.color}
-                      </td>
-
-                      {/* WARRANTY */}
-                      <td className="p-4">
-                        {p.warranty}
-                      </td>
-
-                      {/* PDF */}
-                      <td className="p-4">
-                        {p.product_details_pdf ? (
-                          <a
-                            href={`${BASE_URL}/uploads/pdfs/${p.product_details_pdf}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center gap-1 text-blue-600 hover:underline"
-                          >
-                            <FileText size={16} />
-                            View
-                          </a>
-                        ) : (
-                          "-"
-                        )}
+                        {category.created_at
+                          ? new Date(
+                              category.created_at
+                            ).toLocaleDateString()
+                          : "-"}
                       </td>
 
                       {/* ACTIONS */}
                       <td className="p-4 flex gap-3 justify-center">
+                        {/* EDIT */}
                         <button
                           onClick={() =>
                             navigate(
-                              `/admin/edit-product/${p.id}`
+                              `/admin/edit-category/${category.id}`
                             )
                           }
                           className="bg-blue-100 hover:bg-blue-200 p-2 rounded-full"
@@ -274,9 +197,10 @@ export default function ProductTable() {
                           />
                         </button>
 
+                        {/* DELETE */}
                         <button
                           onClick={() =>
-                            handleDelete(p.id)
+                            handleDelete(category.id)
                           }
                           className="bg-red-100 hover:bg-red-200 p-2 rounded-full"
                         >
@@ -287,15 +211,15 @@ export default function ProductTable() {
                         </button>
                       </td>
                     </tr>
-                  );
-                })
+                  )
+                )
               ) : (
                 <tr>
                   <td
-                    colSpan={11}
+                    colSpan={4}
                     className="text-center py-6 text-gray-500"
                   >
-                    No products found
+                    No categories found
                   </td>
                 </tr>
               )}
@@ -305,7 +229,8 @@ export default function ProductTable() {
           {/* PAGINATION */}
           <div className="flex justify-between items-center p-4">
             <span className="text-sm text-gray-600">
-              Page {currentPage} of {totalPages || 1}
+              Page {currentPage} of{" "}
+              {totalPages || 1}
             </span>
 
             <div className="flex gap-2">

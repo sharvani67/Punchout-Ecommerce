@@ -66,6 +66,8 @@ import ProductTable from "./pages/ProductTable";
 import ProductForm from "./pages/ProductsForm";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
+import CategoryTable from "./pages/CategoryTable";
+import CategoryForm from "./pages/CategoryForm";
 
 
 const queryClient = new QueryClient();
@@ -109,11 +111,30 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+
+             <Route
+              path="/admin/categories-table"
+              element={
+                <ProtectedRoute>
+                  <CategoryTable />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/admin/add-product"
               element={
                 <ProtectedRoute>
                   <ProductForm/>
+                </ProtectedRoute>
+              }
+            />
+
+             <Route
+              path="/admin/add-product-category"
+              element={
+                <ProtectedRoute>
+                  <CategoryForm/>
                 </ProtectedRoute>
               }
             />
