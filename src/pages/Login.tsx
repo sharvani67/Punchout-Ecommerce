@@ -165,7 +165,7 @@ const AdminLogin = () => {
         <div className="relative hidden lg:block p-6">
           <div className="relative h-full rounded-3xl overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
+              src="https://i.pinimg.com/736x/64/cc/d7/64ccd7b50abd9776bf3d1215469dc55a.jpg"
               alt="Travel"
               className="w-full h-full object-cover"
             />
@@ -173,52 +173,13 @@ const AdminLogin = () => {
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/30"></div>
 
-            {/* Content */}
-            <div className="absolute bottom-10 left-8 right-8 text-white">
-              <h1 className="text-4xl font-bold leading-tight mb-4">
-                Your Adventure <br />
-                Start Here
-              </h1>
-
-              <p className="text-sm text-gray-200 leading-6">
-                Join thousands of travelers exploring beautiful destinations
-                around the world with our premium experience.
-              </p>
-
-      
-              <div className="flex gap-3 mt-6 flex-wrap">
-                <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs">
-                  🌍 Discover
-                </span>
-
-                <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs">
-                  ✈️ Book
-                </span>
-
-                <span className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs">
-                  ⭐ Explore
-                </span>
-              </div>
-            </div>
+           
           </div>
         </div>
 
         {/* RIGHT SIDE LOGIN FORM */}
         <div className="flex items-center justify-center p-8 lg:p-14">
           <div className="w-full max-w-md">
-
-           
-
-            {/* TOP SWITCH */}
-            {/* <div className="flex justify-end gap-3 mb-8">
-              <button className="px-4 py-1 rounded-full bg-red-500 text-white text-xs font-semibold shadow">
-                Login
-              </button>
-
-              <button className="text-xs text-gray-500 font-medium">
-                Register
-              </button>
-            </div> */}
 
             {/* LOGO */}
             <div className="flex items-center gap-3 mb-6">

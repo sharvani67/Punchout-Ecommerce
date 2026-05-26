@@ -1,14 +1,5 @@
-// import React from 'react'
 
-// const Home = () => {
-//   return (
-//     <div>Home</div>
-//   )
-// }
-
-// export default Home
-
-
+import Productscards from "@/components/Homecompo/Productcards";
 import React from "react";
 
 type Product = {
@@ -47,6 +38,7 @@ const products: Product[] = [
 const ElectronicsHomePage: React.FC = () => {
   return (
     <div className="min-h-screen overflow-hidden bg-white">
+
       {/* HERO SECTION */}
       <section className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 px-6 py-20 lg:px-20 lg:py-32">
         {/* Blur Effects with new colors */}
@@ -76,11 +68,11 @@ const ElectronicsHomePage: React.FC = () => {
 
             {/* BUTTONS */}
             <div className="mt-10 flex flex-wrap gap-5">
-              <button className="rounded-full bg-gradient-to-r from-pink-600 via-yellow-500 to-blue-600 px-8 py-4 font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <button className="rounded-full bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 to-blue-600 px-8 py-4 font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                 Shop Now
               </button>
 
-              <button className="rounded-full border-2 border-gray-300 px-8 py-4 font-semibold text-gray-700 transition-all duration-300 hover:border-pink-500 hover:text-pink-600">
+              <button className="rounded-full bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 to-blue-600 px-8 py-4 font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl ">
                 Explore Products
               </button>
             </div>
@@ -95,14 +87,14 @@ const ElectronicsHomePage: React.FC = () => {
               </div>
 
               <div>
-                <h3 className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-blue-600 bg-clip-text text-transparent">
+                <h3 className="text-3xl font-bold bg-gradient-to-r from-yellow-600 to-blue-600 bg-clip-text text-transparent">
                   500+
                 </h3>
                 <p className="mt-1 text-gray-500">Electronic Products</p>
               </div>
 
               <div>
-                <h3 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent">
+                <h3 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                   24/7
                 </h3>
                 <p className="mt-1 text-gray-500">Customer Support</p>
@@ -115,7 +107,7 @@ const ElectronicsHomePage: React.FC = () => {
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500/10 via-yellow-500/10 to-blue-500/10 blur-[120px]" />
 
             <img
-              src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1400&auto=format&fit=crop"
+              src="https://i.pinimg.com/736x/64/cc/d7/64ccd7b50abd9776bf3d1215469dc55a.jpg"
               alt="Electronics"
               className="relative z-10 h-[550px] w-full max-w-2xl rounded-[40px] border border-gray-200 object-cover shadow-2xl transition-all duration-500 hover:border-pink-300"
             />
@@ -123,58 +115,12 @@ const ElectronicsHomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* PRODUCTS SECTION */}
-      <section className="bg-gray-50 px-6 py-20 lg:px-20">
-        <div className="mb-16 text-center">
-          <p className="text-sm uppercase tracking-[0.3em] bg-gradient-to-r from-pink-600 via-yellow-500 to-blue-600 bg-clip-text text-transparent font-semibold">
-            Featured Collection
-          </p>
 
-          <h2 className="mt-4 text-4xl font-black text-gray-900 lg:text-5xl">
-            Trending{" "}
-            <span className="bg-gradient-to-r from-pink-600 via-yellow-500 to-blue-600 bg-clip-text text-transparent">
-              Electronic Products
-            </span>
-          </h2>
-        </div>
-
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product: Product, index: number) => (
-            <div
-              key={index}
-              className="group overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:border-pink-300"
-            >
-              <div className="h-64 overflow-hidden bg-gray-100">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-              </div>
-
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-pink-600 group-hover:to-blue-600 group-hover:bg-clip-text group-hover:text-transparent">
-                  {product.name}
-                </h3>
-
-                <div className="mt-5 flex items-center justify-between">
-                  <span className="text-2xl font-black bg-gradient-to-r from-pink-600 via-yellow-500 to-blue-600 bg-clip-text text-transparent">
-                    {product.price}
-                  </span>
-
-                  <button className="rounded-full bg-gradient-to-r from-pink-600 via-yellow-500 to-blue-600 px-5 py-2 font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                    Buy
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <Productscards />
 
       {/* OFFER BANNER */}
       <section className="px-6 py-20 lg:px-20">
-        <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-r from-pink-600 via-yellow-500 to-blue-600 p-10 lg:p-16">
+        <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 p-10 lg:p-16">
           {/* Animated particles effect */}
           <div className="absolute inset-0 opacity-20">
             <div className="absolute left-10 top-10 h-32 w-32 animate-pulse rounded-full bg-white/20 blur-2xl" />
@@ -223,7 +169,7 @@ const ElectronicsHomePage: React.FC = () => {
           </p>
           <h2 className="mt-4 text-4xl font-black text-gray-900 lg:text-5xl">
             Experience The{" "}
-            <span className="bg-gradient-to-r from-pink-600 via-yellow-500 to-blue-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
               Difference
             </span>
           </h2>
@@ -231,7 +177,7 @@ const ElectronicsHomePage: React.FC = () => {
 
         <div className="grid gap-8 md:grid-cols-3">
           <div className="group rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:border-pink-300 hover:shadow-2xl">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-pink-600 to-blue-600">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-yellow-500 to-pink-600">
               <span className="text-2xl">🚀</span>
             </div>
             <h3 className="mb-2 text-xl font-bold text-gray-900">Free Shipping</h3>
@@ -247,7 +193,7 @@ const ElectronicsHomePage: React.FC = () => {
           </div>
 
           <div className="group rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:border-blue-400 hover:shadow-2xl">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-yellow-500">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-yellow-500 to-pink-600">
               <span className="text-2xl">🛡️</span>
             </div>
             <h3 className="mb-2 text-xl font-bold text-gray-900">2 Year Warranty</h3>
@@ -256,8 +202,6 @@ const ElectronicsHomePage: React.FC = () => {
         </div>
       </section>
 
-     
-    
     </div>
   );
 };
