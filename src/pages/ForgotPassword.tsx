@@ -275,7 +275,7 @@ const ForgotPassword = () => {
   onClick={sendOtp}
   className="w-full h-12 rounded-xl bg-red-500 text-white text-sm font-semibold shadow hover:bg-red-600 hover:scale-[1.02] transition-all duration-300"
 >
-  Reset Password
+  Send OTP
         </button>
           </div>
         )}

@@ -269,17 +269,11 @@ const AdminLogin = () => {
   type="submit"
   className="w-full h-12 rounded-xl bg-red-500 text-white text-sm font-semibold shadow hover:bg-red-600 hover:scale-[1.02] transition-all duration-300"
 >
-  Let&apos;s Start Your Journey
+  Login
         </button>
             </form>
 
-            {/* FOOTER TEXT */}
-            <p className="text-center text-sm text-gray-500 mt-8">
-              Don&apos;t have an account?{" "}
-              <span className="text-red-500 font-semibold cursor-pointer hover:underline">
-                Register Now
-              </span>
-            </p>
+           
           </div>
         </div>
       </div>
