@@ -149,6 +149,7 @@ const navItems = [
   { path: '/', label: 'Home' },
   { path: '/admin/productstable', label: 'Products' },
   { path: '/admin/categories-table', label: 'Product Categories' },
+  { path: '/admin/sessions', label: 'Sessions' },
 ];
 
 export default function AdminNavbar() {
