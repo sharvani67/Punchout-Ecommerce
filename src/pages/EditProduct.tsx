@@ -50,13 +50,17 @@ export default function EditProduct() {
     warranty: "",
   });
 
-  const [images, setImages] = useState<File[]>([]);
-
-  const [pdf, setPdf] = useState<File | null>(null);
-
-  const [preview, setPreview] = useState<string[]>(
+  const [images, setImages] = useState<File[]>(
     []
   );
+
+  const [pdf, setPdf] = useState<File | null>(
+    null
+  );
+
+  const [preview, setPreview] = useState<
+    string[]
+  >([]);
 
   const [existingImages, setExistingImages] =
     useState<string[]>([]);
@@ -64,10 +68,11 @@ export default function EditProduct() {
   const [existingPdf, setExistingPdf] =
     useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
   // =========================================
-  // FETCH CATEGORIES
+  // FETCH DATA
   // =========================================
 
   useEffect(() => {
@@ -88,10 +93,6 @@ export default function EditProduct() {
     }
   };
 
-  // =========================================
-  // FETCH SINGLE PRODUCT
-  // =========================================
-
   const fetchProduct = async () => {
     try {
       const res = await axios.get(
@@ -101,22 +102,29 @@ export default function EditProduct() {
       const data = res.data;
 
       setForm({
-        product_name: data.product_name || "",
-        product_code: data.product_code || "",
+        product_name:
+          data.product_name || "",
+        product_code:
+          data.product_code || "",
         product_category_id:
           data.product_category_id || "",
-        product_brand: data.product_brand || "",
+        product_brand:
+          data.product_brand || "",
         price: data.price || "",
         available_stock:
           data.available_stock || "",
-        dimensions: data.dimensions || "",
-        specifications: data.specifications || "",
+        dimensions:
+          data.dimensions || "",
+        specifications:
+          data.specifications || "",
         weight: data.weight || "",
         color: data.color || "",
-        discount: data.discount || "",
+        discount:
+          data.discount || "",
         product_description:
           data.product_description || "",
-        warranty: data.warranty || "",
+        warranty:
+          data.warranty || "",
       });
 
       // Existing Images
@@ -128,12 +136,12 @@ export default function EditProduct() {
 
       // Existing PDF
       if (data.product_details_pdf) {
-        setExistingPdf(data.product_details_pdf);
+        setExistingPdf(
+          data.product_details_pdf
+        );
       }
     } catch (error) {
       console.log(error);
-
-      alert("Error fetching product ❌");
     }
   };
 
@@ -143,7 +151,9 @@ export default function EditProduct() {
 
   const handleChange = (
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      | HTMLInputElement
+      | HTMLTextAreaElement
+      | HTMLSelectElement
     >
   ) => {
     setForm({
@@ -153,7 +163,7 @@ export default function EditProduct() {
   };
 
   // =========================================
-  // MULTIPLE IMAGES
+  // NEW IMAGES
   // =========================================
 
   const handleImageChange = (
@@ -165,15 +175,15 @@ export default function EditProduct() {
 
     setImages(files);
 
-    const imagePreviews = files.map((file) =>
+    const previews = files.map((file) =>
       URL.createObjectURL(file)
     );
 
-    setPreview(imagePreviews);
+    setPreview(previews);
   };
 
   // =========================================
-  // PDF
+  // NEW PDF
   // =========================================
 
   const handlePdfChange = (
@@ -184,6 +194,29 @@ export default function EditProduct() {
     if (file) {
       setPdf(file);
     }
+  };
+
+  // =========================================
+  // REMOVE IMAGE
+  // =========================================
+
+  const removeExistingImage = (
+    img: string
+  ) => {
+    const updatedImages =
+      existingImages.filter(
+        (item) => item !== img
+      );
+
+    setExistingImages(updatedImages);
+  };
+
+  // =========================================
+  // REMOVE PDF
+  // =========================================
+
+  const removeExistingPdf = () => {
+    setExistingPdf("");
   };
 
   // =========================================
@@ -200,18 +233,34 @@ export default function EditProduct() {
     try {
       const data = new FormData();
 
+      // TEXT FIELDS
       Object.entries(form).forEach(
         ([key, value]) => {
           data.append(key, value);
         }
       );
 
-      // Multiple Images
+      // EXISTING IMAGES
+      data.append(
+        "existing_images",
+        JSON.stringify(existingImages)
+      );
+
+      // EXISTING PDF
+      data.append(
+        "existing_pdf",
+        existingPdf
+      );
+
+      // NEW IMAGES
       images.forEach((img) => {
-        data.append("product_images", img);
+        data.append(
+          "product_images",
+          img
+        );
       });
 
-      // PDF
+      // NEW PDF
       if (pdf) {
         data.append(
           "product_details_pdf",
@@ -230,13 +279,17 @@ export default function EditProduct() {
         }
       );
 
-      alert("Product Updated Successfully ✅");
+      alert(
+        "Product Updated Successfully ✅"
+      );
 
       navigate("/admin/productstable");
     } catch (error) {
       console.log(error);
 
-      alert("Error updating product ❌");
+      alert(
+        "Error updating product ❌"
+      );
     } finally {
       setLoading(false);
     }
@@ -295,7 +348,9 @@ export default function EditProduct() {
 
             <select
               name="product_category_id"
-              value={form.product_category_id}
+              value={
+                form.product_category_id
+              }
               onChange={handleChange}
               className="input"
               required
@@ -332,7 +387,9 @@ export default function EditProduct() {
 
           {/* Price */}
           <div>
-            <label className="label">Price</label>
+            <label className="label">
+              Price
+            </label>
 
             <input
               type="number"
@@ -352,7 +409,9 @@ export default function EditProduct() {
             <input
               type="number"
               name="available_stock"
-              value={form.available_stock}
+              value={
+                form.available_stock
+              }
               onChange={handleChange}
               className="input"
             />
@@ -360,7 +419,9 @@ export default function EditProduct() {
 
           {/* Weight */}
           <div>
-            <label className="label">Weight</label>
+            <label className="label">
+              Weight
+            </label>
 
             <input
               type="text"
@@ -373,7 +434,9 @@ export default function EditProduct() {
 
           {/* Color */}
           <div>
-            <label className="label">Color</label>
+            <label className="label">
+              Color
+            </label>
 
             <input
               type="text"
@@ -423,18 +486,34 @@ export default function EditProduct() {
             <div className="flex gap-3 flex-wrap">
               {existingImages.map(
                 (img, index) => (
-                  <img
+                  <div
                     key={index}
-                    src={`${BASE_URL}/uploads/products/${img}`}
-                    alt=""
-                    className="w-24 h-24 rounded-lg object-cover border"
-                  />
+                    className="relative"
+                  >
+                    <img
+                      src={`${BASE_URL}/uploads/products/${img}`}
+                      alt=""
+                      className="w-24 h-24 rounded-lg object-cover border"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeExistingImage(
+                          img
+                        )
+                      }
+                      className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 )
               )}
             </div>
           </div>
 
-          {/* New Images */}
+          {/* Upload Images */}
           <div>
             <label className="label">
               Upload New Images
@@ -444,19 +523,23 @@ export default function EditProduct() {
               type="file"
               multiple
               accept="image/*"
-              onChange={handleImageChange}
+              onChange={
+                handleImageChange
+              }
               className="input"
             />
 
             <div className="flex gap-2 mt-3 flex-wrap">
-              {preview.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt=""
-                  className="w-20 h-20 rounded-lg object-cover border"
-                />
-              ))}
+              {preview.map(
+                (img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt=""
+                    className="w-20 h-20 rounded-lg object-cover border"
+                  />
+                )
+              )}
             </div>
           </div>
 
@@ -467,14 +550,26 @@ export default function EditProduct() {
             </label>
 
             {existingPdf ? (
-              <a
-                href={`${BASE_URL}/uploads/pdfs/${existingPdf}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-600 underline"
-              >
-                View Current PDF
-              </a>
+              <div className="flex items-center gap-3">
+                <a
+                  href={`${BASE_URL}/uploads/pdfs/${existingPdf}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  View Current PDF
+                </a>
+
+                <button
+                  type="button"
+                  onClick={
+                    removeExistingPdf
+                  }
+                  className="bg-red-500 text-white px-2 py-1 rounded text-sm"
+                >
+                  Delete
+                </button>
+              </div>
             ) : (
               <p>No PDF uploaded</p>
             )}
@@ -518,7 +613,9 @@ export default function EditProduct() {
             <textarea
               rows={4}
               name="specifications"
-              value={form.specifications}
+              value={
+                form.specifications
+              }
               onChange={handleChange}
               className="input"
             />

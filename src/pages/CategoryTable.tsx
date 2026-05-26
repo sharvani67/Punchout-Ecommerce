@@ -14,7 +14,7 @@ interface Category {
 export default function CategoryTable() {
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(""); 
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -111,7 +111,7 @@ export default function CategoryTable() {
             onClick={() =>
               navigate("/admin/add-product-category")
             }
-            className="flex items-center gap-2 bg-gradient-to-r from-pink-500 via-yellow-400 to-blue-500 text-white px-5 py-2 rounded-lg shadow hover:scale-105 transition"
+            className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-5 py-2 rounded-lg shadow hover:scale-105 transition"
           >
             <Plus size={18} />
 
@@ -135,23 +135,23 @@ export default function CategoryTable() {
         {/* TABLE */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <table className="min-w-full text-sm">
-            <thead className="bg-gradient-to-r from-gray-900 to-gray-700 text-white">
-              <tr>
-                <th className="p-4">S.No</th>
+           <thead className="bg-gradient-to-r from-orange-500 to-pink-500 text-white">
+  <tr>
+    <th className="p-4 text-center">S.No</th>
 
-                <th className="p-4">
-                  Category Name
-                </th>
+    <th className="p-4 text-center">
+      Category Name
+    </th>
 
-                <th className="p-4">
-                  Created Date
-                </th>
+    <th className="p-4 text-center">
+      Created Date
+    </th>
 
-                <th className="p-4 text-center">
-                  Actions
-                </th>
-              </tr>
-            </thead>
+    <th className="p-4 text-center">
+      Actions
+    </th>
+  </tr>
+</thead>
 
             <tbody>
               {paginatedCategories.length > 0 ? (
@@ -166,19 +166,17 @@ export default function CategoryTable() {
                         {startIndex + index + 1}
                       </td>
 
-                      {/* CATEGORY NAME */}
-                      <td className="p-4 font-medium">
-                        {category.category_name}
-                      </td>
+                     {/* CATEGORY NAME */}
+<td className="p-4 font-medium text-center">
+  {category.category_name}
+</td>
 
-                      {/* DATE */}
-                      <td className="p-4">
-                        {category.created_at
-                          ? new Date(
-                              category.created_at
-                            ).toLocaleDateString()
-                          : "-"}
-                      </td>
+{/* DATE */}
+<td className="p-4 text-center">
+  {category.created_at
+    ? new Date(category.created_at).toLocaleDateString()
+    : "-"}
+</td>
 
                       {/* ACTIONS */}
                       <td className="p-4 flex gap-3 justify-center">
