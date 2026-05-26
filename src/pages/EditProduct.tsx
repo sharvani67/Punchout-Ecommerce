@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminNavbar from "@/components/AdminNavbar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BASE_URL from "@/Config/Api";
 
 interface Category {
@@ -25,10 +25,14 @@ interface Product {
   warranty: string;
 }
 
-export default function ProductForm() {
+export default function EditProduct() {
   const navigate = useNavigate();
 
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { id } = useParams();
+
+  const [categories, setCategories] = useState<
+    Category[]
+  >([]);
 
   const [form, setForm] = useState<Product>({
     product_name: "",
@@ -47,9 +51,18 @@ export default function ProductForm() {
   });
 
   const [images, setImages] = useState<File[]>([]);
+
   const [pdf, setPdf] = useState<File | null>(null);
 
-  const [preview, setPreview] = useState<string[]>([]);
+  const [preview, setPreview] = useState<string[]>(
+    []
+  );
+
+  const [existingImages, setExistingImages] =
+    useState<string[]>([]);
+
+  const [existingPdf, setExistingPdf] =
+    useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -59,14 +72,68 @@ export default function ProductForm() {
 
   useEffect(() => {
     fetchCategories();
+
+    fetchProduct();
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/categories`);
+      const res = await axios.get(
+        `${BASE_URL}/api/categories`
+      );
+
       setCategories(res.data);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  // =========================================
+  // FETCH SINGLE PRODUCT
+  // =========================================
+
+  const fetchProduct = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/api/products/${id}`
+      );
+
+      const data = res.data;
+
+      setForm({
+        product_name: data.product_name || "",
+        product_code: data.product_code || "",
+        product_category_id:
+          data.product_category_id || "",
+        product_brand: data.product_brand || "",
+        price: data.price || "",
+        available_stock:
+          data.available_stock || "",
+        dimensions: data.dimensions || "",
+        specifications: data.specifications || "",
+        weight: data.weight || "",
+        color: data.color || "",
+        discount: data.discount || "",
+        product_description:
+          data.product_description || "",
+        warranty: data.warranty || "",
+      });
+
+      // Existing Images
+      if (data.product_images) {
+        setExistingImages(
+          data.product_images.split(",")
+        );
+      }
+
+      // Existing PDF
+      if (data.product_details_pdf) {
+        setExistingPdf(data.product_details_pdf);
+      }
+    } catch (error) {
+      console.log(error);
+
+      alert("Error fetching product ❌");
     }
   };
 
@@ -79,15 +146,22 @@ export default function ProductForm() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
   // =========================================
   // MULTIPLE IMAGES
   // =========================================
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(
+      e.target.files || []
+    );
 
     setImages(files);
 
@@ -102,7 +176,9 @@ export default function ProductForm() {
   // PDF
   // =========================================
 
-  const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePdfChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
 
     if (file) {
@@ -111,10 +187,12 @@ export default function ProductForm() {
   };
 
   // =========================================
-  // SUBMIT
+  // UPDATE PRODUCT
   // =========================================
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
 
     setLoading(true);
@@ -122,9 +200,11 @@ export default function ProductForm() {
     try {
       const data = new FormData();
 
-      Object.entries(form).forEach(([key, value]) => {
-        data.append(key, value);
-      });
+      Object.entries(form).forEach(
+        ([key, value]) => {
+          data.append(key, value);
+        }
+      );
 
       // Multiple Images
       images.forEach((img) => {
@@ -133,21 +213,30 @@ export default function ProductForm() {
 
       // PDF
       if (pdf) {
-        data.append("product_details_pdf", pdf);
+        data.append(
+          "product_details_pdf",
+          pdf
+        );
       }
 
-      await axios.post(`${BASE_URL}/api/products`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.put(
+        `${BASE_URL}/api/products/${id}`,
+        data,
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
+      );
 
-      alert("Product Added Successfully ✅");
+      alert("Product Updated Successfully ✅");
 
       navigate("/admin/productstable");
     } catch (error) {
       console.log(error);
-      alert("Error adding product ❌");
+
+      alert("Error updating product ❌");
     } finally {
       setLoading(false);
     }
@@ -159,7 +248,7 @@ export default function ProductForm() {
 
       <div className="pt-24 px-6 lg:px-12 pb-10">
         <h1 className="text-3xl font-bold mb-6">
-          Add Product
+          Edit Product
         </h1>
 
         <form
@@ -168,7 +257,10 @@ export default function ProductForm() {
         >
           {/* Product Name */}
           <div>
-            <label className="label">Product Name</label>
+            <label className="label">
+              Product Name
+            </label>
+
             <input
               type="text"
               name="product_name"
@@ -181,7 +273,10 @@ export default function ProductForm() {
 
           {/* Product Code */}
           <div>
-            <label className="label">Product Code</label>
+            <label className="label">
+              Product Code
+            </label>
+
             <input
               type="text"
               name="product_code"
@@ -194,7 +289,9 @@ export default function ProductForm() {
 
           {/* Category */}
           <div>
-            <label className="label">Product Category</label>
+            <label className="label">
+              Product Category
+            </label>
 
             <select
               name="product_category_id"
@@ -203,10 +300,15 @@ export default function ProductForm() {
               className="input"
               required
             >
-              <option value="">Select Category</option>
+              <option value="">
+                Select Category
+              </option>
 
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
+                <option
+                  key={cat.id}
+                  value={cat.id}
+                >
                   {cat.category_name}
                 </option>
               ))}
@@ -215,7 +317,9 @@ export default function ProductForm() {
 
           {/* Brand */}
           <div>
-            <label className="label">Product Brand</label>
+            <label className="label">
+              Product Brand
+            </label>
 
             <input
               type="text"
@@ -241,7 +345,9 @@ export default function ProductForm() {
 
           {/* Stock */}
           <div>
-            <label className="label">Available Stock</label>
+            <label className="label">
+              Available Stock
+            </label>
 
             <input
               type="number"
@@ -280,7 +386,9 @@ export default function ProductForm() {
 
           {/* Discount */}
           <div>
-            <label className="label">Discount</label>
+            <label className="label">
+              Discount
+            </label>
 
             <input
               type="number"
@@ -293,7 +401,9 @@ export default function ProductForm() {
 
           {/* Warranty */}
           <div>
-            <label className="label">Warranty</label>
+            <label className="label">
+              Warranty
+            </label>
 
             <input
               type="text"
@@ -304,10 +414,30 @@ export default function ProductForm() {
             />
           </div>
 
-          {/* Multiple Images */}
+          {/* Existing Images */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <label className="label">
+              Existing Images
+            </label>
+
+            <div className="flex gap-3 flex-wrap">
+              {existingImages.map(
+                (img, index) => (
+                  <img
+                    key={index}
+                    src={`${BASE_URL}/uploads/products/${img}`}
+                    alt=""
+                    className="w-24 h-24 rounded-lg object-cover border"
+                  />
+                )
+              )}
+            </div>
+          </div>
+
+          {/* New Images */}
           <div>
             <label className="label">
-              Product Images
+              Upload New Images
             </label>
 
             <input
@@ -330,10 +460,30 @@ export default function ProductForm() {
             </div>
           </div>
 
-          {/* PDF */}
+          {/* Existing PDF */}
           <div>
             <label className="label">
-              Product Details PDF
+              Existing PDF
+            </label>
+
+            {existingPdf ? (
+              <a
+                href={`${BASE_URL}/uploads/pdfs/${existingPdf}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 underline"
+              >
+                View Current PDF
+              </a>
+            ) : (
+              <p>No PDF uploaded</p>
+            )}
+          </div>
+
+          {/* Upload PDF */}
+          <div>
+            <label className="label">
+              Upload New PDF
             </label>
 
             <input
@@ -346,7 +496,9 @@ export default function ProductForm() {
 
           {/* Dimensions */}
           <div className="md:col-span-2 lg:col-span-3">
-            <label className="label">Dimensions</label>
+            <label className="label">
+              Dimensions
+            </label>
 
             <textarea
               rows={3}
@@ -359,7 +511,9 @@ export default function ProductForm() {
 
           {/* Specifications */}
           <div className="md:col-span-2 lg:col-span-3">
-            <label className="label">Specifications</label>
+            <label className="label">
+              Specifications
+            </label>
 
             <textarea
               rows={4}
@@ -379,7 +533,9 @@ export default function ProductForm() {
             <textarea
               rows={5}
               name="product_description"
-              value={form.product_description}
+              value={
+                form.product_description
+              }
               onChange={handleChange}
               className="input"
             />
@@ -392,7 +548,9 @@ export default function ProductForm() {
               disabled={loading}
               className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
             >
-              {loading ? "Adding..." : "Add Product"}
+              {loading
+                ? "Updating..."
+                : "Update Product"}
             </button>
           </div>
         </form>
