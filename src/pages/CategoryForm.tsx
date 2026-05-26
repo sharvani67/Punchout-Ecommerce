@@ -73,7 +73,7 @@ export default function CategoryForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
+              className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white  hover:scale-105 transition py-3 rounded-xl font-semibold "
             >
               {loading ? "Adding..." : "Add Category"}
             </button>
