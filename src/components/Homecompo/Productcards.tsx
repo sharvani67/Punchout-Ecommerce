@@ -124,10 +124,7 @@ export default function Productscards() {
                   {product.description}
                 </p>
 
-                {/* BUTTON */}
-                <button className="mt-6 rounded-2xl bg-gradient-to-r from-pink-500 via-orange-500 to-yellow-400 px-5 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:scale-105">
-                  View Product
-                </button>
+                
               </div>
             </div>
           ))}
