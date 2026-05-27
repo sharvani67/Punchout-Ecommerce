@@ -200,11 +200,7 @@ export default function AdminNavbar() {
           ? 'backdrop-blur-xl shadow-lg border-b border-white/30'
           : 'shadow-md'
       }`}
-      style={{
-        background: scrolled
-          ? 'linear-gradient(to right, #FECDD3, #FEF08A, #BFDBFE)'
-          : 'linear-gradient(to right, #FFF1F2, #FEFCE8, #EFF6FF)',
-      }}
+    
     >
       {/* TOP GRADIENT LINE */}
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500" />
