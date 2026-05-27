@@ -176,6 +176,23 @@ export default function AdminNavbar() {
     navigate('/admin');
   };
 
+  // PRODUCTS ACTIVE
+  const isProductsActive =
+    location.pathname === '/admin/productstable' ||
+    location.pathname.startsWith('/admin/add-product') ||
+    location.pathname.startsWith('/admin/edit-product');
+
+  // CATEGORIES ACTIVE
+  const isCategoriesActive =
+    location.pathname === '/admin/categories-table' ||
+    location.pathname.startsWith('/admin/add-category-product') ||
+    location.pathname.startsWith('/admin/edit-category');
+
+  // SESSIONS ACTIVE
+  const isSessionsActive =
+    location.pathname === '/admin/sessions' ||
+    location.pathname.startsWith('/admin/session-details');
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -204,29 +221,43 @@ export default function AdminNavbar() {
 
         {/* DESKTOP NAVIGATION */}
         <nav className="hidden md:flex items-center gap-3">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`relative px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 overflow-hidden ${
-                location.pathname === item.path
-                  ? 'text-white shadow-lg'
-                  : 'text-gray-800 hover:text-black hover:bg-white/40'
-              }`}
-            >
-              {/* ACTIVE GRADIENT */}
-              {location.pathname === item.path && (
-                <>
-                  <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 -z-10" />
+          {navItems.map((item) => {
+            let isActive = false;
 
-                  {/* Glow Effect */}
-                  <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 blur-md opacity-50 -z-20" />
-                </>
-              )}
+            if (item.path === '/admin/productstable') {
+              isActive = isProductsActive;
+            } else if (item.path === '/admin/categories-table') {
+              isActive = isCategoriesActive;
+            } else if (item.path === '/admin/sessions') {
+              isActive = isSessionsActive;
+            } else {
+              isActive = location.pathname === item.path;
+            }
 
-              {item.label}
-            </Link>
-          ))}
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`relative px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 overflow-hidden ${
+                  isActive
+                    ? 'text-white shadow-lg'
+                    : 'text-gray-800 hover:text-black hover:bg-white/40'
+                }`}
+              >
+                {/* ACTIVE GRADIENT */}
+                {isActive && (
+                  <>
+                    <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 -z-10" />
+
+                    {/* Glow Effect */}
+                    <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 blur-md opacity-50 -z-20" />
+                  </>
+                )}
+
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* DESKTOP LOGOUT */}
@@ -264,20 +295,34 @@ export default function AdminNavbar() {
         }}
       >
         <nav className="flex flex-col p-4 gap-3">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={() => setMobileOpen(false)}
-              className={`px-4 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                location.pathname === item.path
-                  ? 'bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 text-white shadow-lg'
-                  : 'text-gray-800 hover:bg-white/50'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            let isActive = false;
+
+            if (item.path === '/admin/productstable') {
+              isActive = isProductsActive;
+            } else if (item.path === '/admin/categories-table') {
+              isActive = isCategoriesActive;
+            } else if (item.path === '/admin/sessions') {
+              isActive = isSessionsActive;
+            } else {
+              isActive = location.pathname === item.path;
+            }
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setMobileOpen(false)}
+                className={`px-4 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 text-white shadow-lg'
+                    : 'text-gray-800 hover:bg-white/50'
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
 
           {/* MOBILE LOGOUT */}
           <Button
