@@ -26,6 +26,8 @@ import Cart from "./pages/Cart";
 import EditCategory from "./pages/EditCategory";
 import EditProduct from "./pages/EditProduct";
 import SessionItems from "./pages/SessionItem";
+import DynamicProductDetail from "./pages/DynamicProductDetails";
+import DynamicProducts from "./pages/DynamicProducts";
 
 import { CartProvider } from "./context/CartContext";
 import Sessions from "./pages/Sessions";
@@ -48,8 +50,11 @@ const App = () => {
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<Products />} />
+                <Route path="/dynamic-products" element={<DynamicProducts />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
+                 <Route path="/dynamic-product/:id" element={<DynamicProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
+    
               </Route>
 
               {/* ✅ ADMIN ROUTES */}
@@ -114,7 +119,7 @@ const App = () => {
                 />
 
                 <Route
-                  path="/admin/add-product-category"
+                  path="/admin/add-category-product"
                   element={
                     <ProtectedRoute>
                       <CategoryForm />

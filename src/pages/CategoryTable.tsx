@@ -109,7 +109,7 @@ export default function CategoryTable() {
 
           <button
             onClick={() =>
-              navigate("/admin/add-product-category")
+              navigate("/admin/add-category-product")
             }
             className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-5 py-2 rounded-lg shadow hover:scale-105 transition"
           >

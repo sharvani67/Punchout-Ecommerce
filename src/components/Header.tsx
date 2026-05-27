@@ -17,6 +17,7 @@ const navItems = [
   { path: "/collections", label: "Collections" },
   { path: "/about", label: "About" },
   { path: "/contact", label: "Contact" },
+  { path: "/dynamic-products", label: "Dynamic Products" },
 ];
 
 export default function Header() {
