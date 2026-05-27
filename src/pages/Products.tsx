@@ -227,10 +227,27 @@ const Products: React.FC = () => {
                     
                     <div className="flex gap-2">
                       <Link to={`/product/${product.id}`} className="flex-1">
-                        <Button variant="outline" className="w-full rounded-xl border-2 border-gray-200 hover:border-orange-500 hover:text-orange-500">
-                          <Eye className="w-4 h-4 mr-2" />
-                          Details
-                        </Button>
+                        <Button
+  variant="outline"
+  className="
+    w-full
+    h-12
+    rounded-2xl
+    border
+    border-gray-300
+    bg-gray-100
+    text-black
+    shadow-sm
+    hover:bg-gray-100
+    hover:border-gray-300
+    hover:text-black
+    transition-all
+    duration-300
+  "
+>
+  <Eye className="w-4 h-4 mr-2" />
+  Details
+                      </Button>
                       </Link>
                       <Button 
                         onClick={() => handleAddToCart(product)}
