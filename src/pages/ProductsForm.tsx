@@ -114,44 +114,181 @@ export default function ProductForm() {
   // SUBMIT
   // =========================================
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (
+  e: React.FormEvent
+) => {
+  e.preventDefault();
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const data = new FormData();
+  try {
+    const data = new FormData();
 
-      Object.entries(form).forEach(([key, value]) => {
+    // =====================================
+    // APPEND FORM DATA
+    // =====================================
+
+    Object.entries(form).forEach(
+      ([key, value]) => {
         data.append(key, value);
-      });
+      }
+    );
 
-      // Multiple Images
-      images.forEach((img) => {
-        data.append("product_images", img);
-      });
+    // =====================================
+    // MULTIPLE IMAGES
+    // =====================================
 
-      // PDF
-      if (pdf) {
-        data.append("product_details_pdf", pdf);
+    images.forEach((img) => {
+      data.append("product_images", img);
+    });
+
+    // =====================================
+    // PDF FILE
+    // =====================================
+
+    if (pdf) {
+      data.append(
+        "product_details_pdf",
+        pdf
+      );
+    }
+
+    console.log(
+      "🚀 Sending Product Data..."
+    );
+
+    console.log("Form Data:", form);
+
+    console.log("Images:", images);
+
+    console.log("PDF:", pdf);
+
+    // =====================================
+    // API CALL
+    // =====================================
+
+    const response = await axios.post(
+      `${BASE_URL}/api/products`,
+      data,
+      {
+        headers: {
+          "Content-Type":
+            "multipart/form-data",
+        },
+      }
+    );
+
+    console.log(
+      "✅ Product Added Successfully:",
+      response.data
+    );
+
+    alert("Product Added Successfully ✅");
+
+    navigate("/admin/productstable");
+  } catch (error: any) {
+    console.error(
+      "❌ Product Add Error:",
+      error
+    );
+
+    // =====================================
+    // SERVER RESPONSE ERROR
+    // =====================================
+
+    if (error.response) {
+      console.error(
+        "Status:",
+        error.response.status
+      );
+
+      console.error(
+        "Response Data:",
+        error.response.data
+      );
+
+      console.error(
+        "Headers:",
+        error.response.headers
+      );
+
+      const errorData =
+        error.response.data;
+
+      // =====================================
+      // DUPLICATE ENTRY ERROR
+      // =====================================
+
+      if (
+        errorData?.code ===
+        "ER_DUP_ENTRY"
+      ) {
+        // PRODUCT CODE DUPLICATE
+        if (
+          errorData.sqlMessage?.includes(
+            "product_code"
+          )
+        ) {
+          alert(
+            "Product Code already exists ❌"
+          );
+        }
+
+        // OTHER DUPLICATES
+        else {
+          alert(
+            errorData.sqlMessage ||
+              "Duplicate entry found ❌"
+          );
+        }
       }
 
-      await axios.post(`${BASE_URL}/api/products`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // =====================================
+      // OTHER SERVER ERRORS
+      // =====================================
 
-      alert("Product Added Successfully ✅");
-
-      navigate("/admin/productstable");
-    } catch (error) {
-      console.log(error);
-      alert("Error adding product ❌");
-    } finally {
-      setLoading(false);
+      else {
+        alert(
+          errorData?.message ||
+            "Server Error ❌"
+        );
+      }
     }
-  };
+
+    // =====================================
+    // NO RESPONSE FROM SERVER
+    // =====================================
+
+    else if (error.request) {
+      console.error(
+        "No response received:",
+        error.request
+      );
+
+      alert(
+        "No response from server ❌"
+      );
+    }
+
+    // =====================================
+    // OTHER ERRORS
+    // =====================================
+
+    else {
+      console.error(
+        "Error Message:",
+        error.message
+      );
+
+      alert(
+        error.message ||
+          "Something went wrong ❌"
+      );
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>

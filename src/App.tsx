@@ -25,8 +25,10 @@ import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import EditCategory from "./pages/EditCategory";
 import EditProduct from "./pages/EditProduct";
+import SessionItems from "./pages/SessionItem";
 
 import { CartProvider } from "./context/CartContext";
+import Sessions from "./pages/Sessions";
 
 const queryClient = new QueryClient();
 
@@ -65,11 +67,29 @@ const App = () => {
                   }
                 />
 
+                 <Route
+                  path="/admin/sessions"
+                  element={
+                    <ProtectedRoute>
+                      <Sessions />
+                    </ProtectedRoute>
+                  }
+                />
+
                 <Route
                   path="/admin/add-product"
                   element={
                     <ProtectedRoute>
                       <ProductForm />
+                    </ProtectedRoute>
+                  }
+                />
+
+                 <Route
+                  path="/admin/session-details/:id"
+                  element={
+                    <ProtectedRoute>
+                      <SessionItems />
                     </ProtectedRoute>
                   }
                 />
