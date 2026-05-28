@@ -2,7 +2,7 @@ const WhatsAppFloat = () => {
   const handleWhatsAppClick = () => {
     const phoneNumber = "919686521214";
     const message =
-      "Hello! I’d like to schedule a consultation with MVB Solutions. Please assist me with the process.";
+      "Hello! I’d like to schedule a consultation with Punchout. Please assist me with the process.";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };

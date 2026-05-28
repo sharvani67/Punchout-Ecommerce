@@ -8,7 +8,7 @@ import {
   Filter,
   ChevronDown,
 } from 'lucide-react';
-
+import { toast } from "sonner";
 import { Button } from '@/components/ui/button';
 
 import BASE_URL from '@/Config/Api';
@@ -29,9 +29,6 @@ const Products: React.FC = () => {
   const [sortBy, setSortBy] =
     useState<string>('default');
 
-  // =========================================
-  // FETCH PRODUCTS
-  // =========================================
 
   useEffect(() => {
     fetch(`${BASE_URL}/api/products`)
@@ -51,10 +48,6 @@ const Products: React.FC = () => {
       });
   }, []);
 
-  // =========================================
-  // UNIQUE CATEGORIES
-  // =========================================
-
   const categories = [
     'all',
 
@@ -62,10 +55,6 @@ const Products: React.FC = () => {
       products.map((item) => item.category_name)
     ),
   ];
-
-  // =========================================
-  // FILTERED PRODUCTS
-  // =========================================
 
   const filteredProducts = products
     .filter(
@@ -91,39 +80,58 @@ const Products: React.FC = () => {
       return 0;
     });
 
-  // =========================================
-  // ADD TO CART
-  // =========================================
+  const handleAddToCart = async (product: any) => {
+  try {
+    const sessionId =
+      localStorage.getItem("sessionId") ||
+      Math.random().toString(36).substring(2);
 
-  const handleAddToCart = (product: any) => {
-    const cartProduct: Product = {
-      id: product.id,
+    // store session if not exists
+    localStorage.setItem("sessionId", sessionId);
 
-      name: product.product_name,
+    const res = await fetch(`${BASE_URL}/api/cart/add-cart`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        sessionId,
+        product,
+      }),
+    });
 
-      category: product.category_name,
+    const data = await res.json();
 
-      price: Number(product.price),
+    if (data.success) {
+      console.log("✅ Added to cart");
+      toast.success("Added to cart 🛒");
 
-      originalPrice:
-        Number(product.price) +
-        (Number(product.price) *
-          Number(product.discount || 0)) /
-          100,
+      // optional: still update local cart (your context)
+      const cartProduct: Product = {
+        id: product.id,
+        name: product.product_name,
+        category: product.category_name,
+        price: Number(product.price),
+        originalPrice:
+          Number(product.price) +
+          (Number(product.price) *
+            Number(product.discount || 0)) /
+            100,
+        rating: 4.5,
+        image: product.product_images
+          ? `${BASE_URL}/uploads/products/${
+              product.product_images.split(",")[0]
+            }`
+          : "https://via.placeholder.com/300",
+        description: product.product_description,
+      };
 
-      rating: 4.5,
-
-      image: product.product_images
-        ? `${BASE_URL}/uploads/products/${
-            product.product_images.split(',')[0]
-          }`
-        : 'https://via.placeholder.com/300',
-
-      description: product.product_description,
-    };
-
-    addToCart(cartProduct, 1);
-  };
+      addToCart(cartProduct, 1);
+    }
+  } catch (err) {
+    console.error("❌ Add to cart error:", err);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
