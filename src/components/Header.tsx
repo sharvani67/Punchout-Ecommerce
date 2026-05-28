@@ -399,8 +399,8 @@ import logo from "@/assets/mainlogo.png";
 
 const navItems = [
   { path: "/", label: "Home" },
-  { path: "/products", label: "Products" },
-  { path: "/dynamic-products", label: "Dynamic Products", matchPaths: ["/dynamic-products", "/dynamic-product"] },
+  // { path: "/products", label: "Products" },
+  { path: "/dynamic-products", label: "Products", matchPaths: ["/dynamic-products", "/dynamic-product"] },
 ];
 
 export default function Header() {

@@ -3,9 +3,41 @@ import { Link } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import BASE_URL from '@/Config/Api';
 
 const Cart: React.FC = () => {
   const { cartItems, cartTotal, removeFromCart, updateQuantity, clearCart } = useCart();
+
+ // ✅ FIXED checkout function
+  const handleCheckout = async () => {
+    try {
+      const sessionId = localStorage.getItem("sessionId");
+
+      if (!sessionId) {
+        alert("Session missing");
+        return;
+      }
+
+      const res = await fetch(`${BASE_URL}/api/supplier/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sessionId }),
+      });
+
+      const html = await res.text();
+
+      // ✅ PunchOut redirect
+      document.open();
+      document.write(html);
+      document.close();
+
+    } catch (err) {
+      console.error(err);
+      alert("Checkout failed");
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -127,9 +159,12 @@ const Cart: React.FC = () => {
               </div>
 
               <div className="space-y-3">
-                <Button className="w-full bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 hover:scale-105 transition-all duration-300 rounded-xl h-12 text-lg font-semibold">
-                  Proceed to Checkout
-                </Button>
+                <Button
+  onClick={handleCheckout}
+  className="w-full bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500"
+>
+  Proceed to Checkout
+</Button>
                 <Button
                   variant="outline"
                   onClick={clearCart}

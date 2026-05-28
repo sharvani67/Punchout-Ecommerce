@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import { useEffect } from "react";
 import Layout from "./components/Layout";
 import AdminLayout from "./components/AdminLayout";
 import ScrollToTop from "./components/ScrollToTop";
@@ -34,10 +34,24 @@ import Sessions from "./pages/Sessions";
 
 // IMPORT THE NEW ProductDetails COMPONENT
 import ProductDetails from "./pages/ProductDetails";
-
+import PunchoutRoute from "./PunchoutRoute";
+import Unauthorized from "./Unauthorized";
 const queryClient = new QueryClient();
 
+
 const App = () => {
+
+   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionFromUrl = params.get("session");
+
+    if (sessionFromUrl) {
+      localStorage.setItem("sessionId", sessionFromUrl);
+
+      // 🔥 optional: clean URL (important for security)
+      window.history.replaceState({}, document.title, "/dynamic-products");
+    }
+  }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -50,14 +64,69 @@ const App = () => {
 
             <Routes>
               {/* ✅ PUBLIC ROUTES */}
-              <Route element={<Layout />}>
+              {/* <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/dynamic-products" element={<DynamicProducts />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/dynamic-product/:id" element={<DynamicProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
-              </Route>
+              </Route> */}
+
+              <Route element={<Layout />}>
+  <Route
+    path="/"
+    element={
+      <PunchoutRoute>
+        <Home />
+      </PunchoutRoute>
+    }
+  />
+  <Route path="/unauthorized" element={<Unauthorized/>} />
+
+  <Route
+    path="/products"
+    element={
+      <PunchoutRoute>
+        <Products />
+      </PunchoutRoute>
+    }
+  />
+   <Route
+    path="/product/:id"
+    element={
+      <PunchoutRoute>
+        <ProductDetail />
+      </PunchoutRoute>
+    }
+  />
+   <Route
+    path="/dynamic-product/:id"
+    element={
+      <PunchoutRoute>
+        <DynamicProductDetail />
+      </PunchoutRoute>
+    }
+  />
+
+  <Route
+    path="/dynamic-products"
+    element={
+      <PunchoutRoute>
+        <DynamicProducts />
+      </PunchoutRoute>
+    }
+  />
+
+  <Route
+    path="/cart"
+    element={
+      <PunchoutRoute>
+        <Cart />
+      </PunchoutRoute>
+    }
+  />
+</Route>
 
               {/* ✅ ADMIN ROUTES */}
               <Route element={<AdminLayout />}>
