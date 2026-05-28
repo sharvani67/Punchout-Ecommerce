@@ -32,6 +32,9 @@ import DynamicProducts from "./pages/DynamicProducts";
 import { CartProvider } from "./context/CartContext";
 import Sessions from "./pages/Sessions";
 
+// IMPORT THE NEW ProductDetails COMPONENT
+import ProductDetails from "./pages/ProductDetails";
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -52,9 +55,8 @@ const App = () => {
                 <Route path="/products" element={<Products />} />
                 <Route path="/dynamic-products" element={<DynamicProducts />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
-                 <Route path="/dynamic-product/:id" element={<DynamicProductDetail />} />
+                <Route path="/dynamic-product/:id" element={<DynamicProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
-    
               </Route>
 
               {/* ✅ ADMIN ROUTES */}
@@ -72,7 +74,17 @@ const App = () => {
                   }
                 />
 
-                 <Route
+                {/* ✅ PRODUCT DETAILS ROUTE - ADDED HERE */}
+                <Route
+                  path="/admin/product-details/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ProductDetails />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
                   path="/admin/sessions"
                   element={
                     <ProtectedRoute>
@@ -90,7 +102,7 @@ const App = () => {
                   }
                 />
 
-                 <Route
+                <Route
                   path="/admin/session-details/:id"
                   element={
                     <ProtectedRoute>
@@ -100,13 +112,13 @@ const App = () => {
                 />
 
                 <Route
-  path="/admin/edit-product/:id"
-  element={
-    <ProtectedRoute>
-      <EditProduct />
-    </ProtectedRoute>
-  }
-/>
+                  path="/admin/edit-product/:id"
+                  element={
+                    <ProtectedRoute>
+                      <EditProduct />
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* Categories */}
                 <Route
@@ -126,14 +138,15 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
+                
                 <Route
-  path="/admin/edit-category/:id"
-  element={
-    <ProtectedRoute>
-      <EditCategory />
-    </ProtectedRoute>
-  }
-/>
+                  path="/admin/edit-category/:id"
+                  element={
+                    <ProtectedRoute>
+                      <EditCategory />
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* Forgot Password */}
                 <Route
