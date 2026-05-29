@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import Layout from "./components/Layout";
 import AdminLayout from "./components/AdminLayout";
 import ScrollToTop from "./components/ScrollToTop";
@@ -41,17 +41,26 @@ const queryClient = new QueryClient();
 
 const App = () => {
 
-   useEffect(() => {
+  const [sessionReady, setSessionReady] = useState(false);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sessionFromUrl = params.get("session");
 
     if (sessionFromUrl) {
       localStorage.setItem("sessionId", sessionFromUrl);
 
-      // 🔥 optional: clean URL (important for security)
+      // साफ URL
       window.history.replaceState({}, document.title, "/dynamic-products");
     }
+
+    // ✅ mark ready AFTER checking
+    setSessionReady(true);
   }, []);
+
+  // ⛔ STOP rendering until session handled
+  if (!sessionReady) return null;
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

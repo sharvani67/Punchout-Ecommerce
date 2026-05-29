@@ -27,7 +27,7 @@ import {
 import { Button } from '@/components/ui/button';
 import BASE_URL from '@/Config/Api';
 
-interface ProductWithDetails{
+interface ProductWithDetails {
   product_brand?: string;
   product_images?: string;
   product_description?: string;
@@ -142,7 +142,7 @@ const ProductDetail: React.FC = () => {
         <div className="text-center">
           <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-700 mb-2">Product not found</h2>
-          <Link to="/products" className="text-orange-500 hover:text-orange-600 font-semibold">
+          <Link to="/dynamic-products" className="text-orange-500 hover:text-orange-600 font-semibold">
             Back to Products
           </Link>
         </div>
@@ -156,8 +156,8 @@ const ProductDetail: React.FC = () => {
 
   const images = product.product_images
     ? product.product_images
-        .split(',')
-        .map((img) => `${BASE_URL}/uploads/products/${img.trim()}`)
+      .split(',')
+      .map((img) => `${BASE_URL}/uploads/products/${img.trim()}`)
     : ['https://via.placeholder.com/500?text=No+Image'];
 
   // =========================================
@@ -175,69 +175,55 @@ const ProductDetail: React.FC = () => {
   // ADD TO CART
   // =========================================
 
-    const handleAddToCart = async (product: any) => {
-  try {
-    const sessionId = localStorage.getItem("sessionId");
+const handleAddToCart = async (product: any) => {
+  const sessionId = localStorage.getItem("sessionId");
 
-if (!sessionId) {
-  toast.error("Session expired. Please login via procurement system.");
-  return;
-}
-
-    // store session if not exists
-    localStorage.setItem("sessionId", sessionId);
-
-    const res = await fetch(`${BASE_URL}/api/cart/add-cart`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sessionId,
-        product,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      console.log("✅ Added to cart");
-      toast.success("Added to cart 🛒");
-
-      // optional: still update local cart (your context)
-      const cartProduct: Product = {
-        id: product.id,
-        name: product.product_name,
-        category: product.category_name,
-        price: Number(product.price),
-        originalPrice:
-          Number(product.price) +
-          (Number(product.price) *
-            Number(product.discount || 0)) /
-            100,
-        rating: 4.5,
-        image: product.product_images
-          ? `${BASE_URL}/uploads/products/${
-              product.product_images.split(",")[0]
-            }`
-          : "https://via.placeholder.com/300",
-        description: product.product_description,
-      };
-
-      addToCart(cartProduct, 1);
-    }
-  } catch (err) {
-    console.error("❌ Add to cart error:", err);
+  if (!sessionId) {
+    toast.error("Session expired. Please login again.");
+    return;
   }
-};
 
+  setLoading(true);
+
+  try {
+    const image = product.product_images
+      ? `${BASE_URL}/uploads/products/${product.product_images.split(",")[0]}`
+      : "https://via.placeholder.com/300";
+
+    const originalPrice = Number(product.price) || 0;
+    const discount = Number(product.discount) || 0;
+
+    // ✅ SELLING PRICE (after discount)
+    const sellingPrice = originalPrice * (1 - discount / 100);
+
+    const cartProduct: Product = {
+      id: product.id,
+      name: product.product_name || "No Name",
+      category: product.category_name || "General",
+      price: sellingPrice, // ✅ IMPORTANT
+      originalPrice: originalPrice, // optional
+      rating: 4.5,
+      image: image,
+      description: product.product_description || "",
+    };
+
+    await addToCart(cartProduct, quantity);
+
+    toast.success("Added to cart 🛒");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to add to cart");
+  }
+
+  setLoading(false);
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <div className="container mx-auto px-4 py-8 lg:py-12">
         {/* BACK BUTTON */}
         <div className="mb-6">
           <Link
-            to="/products"
+            to="/dynamic-products"
             className="inline-flex items-center gap-2 text-gray-600 hover:text-orange-500 transition-all duration-300 group"
           >
             <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -269,11 +255,10 @@ if (!sessionId) {
                   {images.map((img, idx) => (
                     <div
                       key={idx}
-                      className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 ${
-                        selectedImage === idx
+                      className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 ${selectedImage === idx
                           ? 'border-orange-500 shadow-lg scale-105'
                           : 'border-gray-200 hover:border-orange-300 hover:scale-105'
-                      }`}
+                        }`}
                       onClick={() => setSelectedImage(idx)}
                     >
                       <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
@@ -423,7 +408,7 @@ if (!sessionId) {
                 </div>
 
                 <Button
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart(product)}
                   disabled={!isInStock}
                   className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:scale-105 transition-all duration-300 rounded-xl h-12 text-lg font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -456,11 +441,10 @@ if (!sessionId) {
             <div className="flex overflow-x-auto border-b border-gray-200 px-6">
               <button
                 onClick={() => setActiveTab('details')}
-                className={`px-6 py-4 text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                  activeTab === 'details'
+                className={`px-6 py-4 text-sm font-medium transition-all duration-300 whitespace-nowrap ${activeTab === 'details'
                     ? 'text-orange-600 border-b-2 border-orange-600'
                     : 'text-gray-500 hover:text-orange-600'
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-2">
                   <Info className="w-4 h-4" />
@@ -470,11 +454,10 @@ if (!sessionId) {
               {product.specifications && (
                 <button
                   onClick={() => setActiveTab('specifications')}
-                  className={`px-6 py-4 text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                    activeTab === 'specifications'
+                  className={`px-6 py-4 text-sm font-medium transition-all duration-300 whitespace-nowrap ${activeTab === 'specifications'
                       ? 'text-orange-600 border-b-2 border-orange-600'
                       : 'text-gray-500 hover:text-orange-600'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4" />
@@ -484,11 +467,10 @@ if (!sessionId) {
               )}
               <button
                 onClick={() => setActiveTab('shipping')}
-                className={`px-6 py-4 text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                  activeTab === 'shipping'
+                className={`px-6 py-4 text-sm font-medium transition-all duration-300 whitespace-nowrap ${activeTab === 'shipping'
                     ? 'text-orange-600 border-b-2 border-orange-600'
                     : 'text-gray-500 hover:text-orange-600'
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-2">
                   <Truck className="w-4 h-4" />
@@ -509,7 +491,7 @@ if (!sessionId) {
                       </div>
                     </div>
                   )}
-                  
+
                   <div>
                     <h3 className="font-semibold text-gray-800 mb-3">Product Information</h3>
                     <div className="bg-gray-50 rounded-xl p-4">

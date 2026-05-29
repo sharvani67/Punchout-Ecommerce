@@ -69,7 +69,7 @@
 //   const addToCart = (product: Product, quantity: number = 1): void => {
 //     setCartItems(prevItems => {
 //       const existingItem = prevItems.find(item => item.id === product.id);
-      
+
 //       if (existingItem) {
 //         return prevItems.map(item =>
 //           item.id === product.id
@@ -77,7 +77,7 @@
 //             : item
 //         );
 //       }
-      
+
 //       return [...prevItems, { ...product, quantity }];
 //     });
 //   };
@@ -91,7 +91,7 @@
 //       removeFromCart(productId);
 //       return;
 //     }
-    
+
 //     setCartItems(prevItems =>
 //       prevItems.map(item =>
 //         item.id === productId ? { ...item, quantity } : item
@@ -126,6 +126,7 @@
 
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import BASE_URL from '@/Config/Api';
 
 export interface Product {
   id: number;
@@ -177,16 +178,31 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartTotal, setCartTotal] = useState(0);
 
-  const sessionId = localStorage.getItem("sessionId");
 
+  // ✅ ALWAYS GET FRESH SESSION
+  const SessionId = () => localStorage.getItem("sessionId");
   // 🔥 LOAD CART FROM BACKEND
   const loadCart = async () => {
+    const sessionId = SessionId();
     if (!sessionId) return;
 
-    const res = await fetch(`/api/cart/get/${sessionId}`);
+    const res = await fetch(`${BASE_URL}/api/cart/get/${sessionId}`);
     const data = await res.json();
 
-    setCartItems(data);
+    // ✅ FIX: MAP BACKEND → FRONTEND FORMAT
+    const formatted = data.map((item: any) => ({
+      id: item.product_id,
+      name: item.product_name || "No Name",
+      price: Number(item.price) || 0,
+      quantity: Number(item.quantity) || 1,
+      image: item.image || "",       // ✅ FIXED
+      mainImage: item.image || "",   // ✅ FIXED
+      category: "",
+      rating: 0,
+      description: ""
+    }));
+
+    setCartItems(formatted);
   };
 
   useEffect(() => {
@@ -201,26 +217,52 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     setCartTotal(total);
   }, [cartItems]);
 
-  // ✅ ADD TO CART
+
+  // ✅ ADD TO CART (OPTIMISTIC UI 🔥)
   const addToCart = async (product: Product, quantity: number = 1) => {
+    const sessionId = SessionId();
     if (!sessionId) return;
 
-    await fetch("/api/cart/add-cart", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sessionId, product }),
+    // 🔥 INSTANT UI UPDATE
+    setCartItems((prev) => {
+      const existing = prev.find((p) => p.id === product.id);
+
+      if (existing) {
+        return prev.map((p) =>
+          p.id === product.id
+            ? { ...p, quantity: p.quantity + quantity }
+            : p
+        );
+      }
+
+      return [...prev, { ...product, quantity }];
     });
 
-    await loadCart(); // sync with backend
+    try {
+      await fetch(`${BASE_URL}/api/cart/add-cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionId,
+          product,
+          quantity,
+        }),
+      });
+
+      await loadCart(); // final sync
+    } catch (err) {
+      console.error("Add to cart failed", err);
+    }
   };
 
   // ✅ UPDATE QUANTITY
   const updateQuantity = async (productId: number, quantity: number) => {
+    const sessionId = SessionId();
     if (!sessionId) return;
 
-    await fetch("/api/cart/update-cart", {
+    await fetch(`${BASE_URL}/api/cart/update-cart`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -237,9 +279,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
 
   // ✅ REMOVE ITEM
   const removeFromCart = async (productId: number) => {
+    const sessionId = SessionId();
     if (!sessionId) return;
 
-    await fetch("/api/cart/remove-cart", {
+    await fetch(`${BASE_URL}/api/cart/remove-cart`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -255,9 +298,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
 
   // ✅ CLEAR CART
   const clearCart = async () => {
+    const sessionId = SessionId();
     if (!sessionId) return;
 
-    await fetch("/api/cart/clear-cart", {
+    await fetch(`${BASE_URL}/api/cart/clear-cart`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

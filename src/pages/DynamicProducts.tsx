@@ -82,35 +82,16 @@ const Products: React.FC = () => {
     });
 
   const handleAddToCart = async (product: any) => {
-  try {
     const sessionId = localStorage.getItem("sessionId");
 
-if (!sessionId) {
-  toast.error("Session expired. Please login via procurement system.");
-  return;
-}
+    if (!sessionId) {
+      toast.error("Session expired. Please login again.");
+      return;
+    }
 
-    // store session if not exists
-    localStorage.setItem("sessionId", sessionId);
+    setLoading(true);
 
-    const res = await fetch(`${BASE_URL}/api/cart/add-cart`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sessionId,
-        product,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      console.log("✅ Added to cart");
-      toast.success("Added to cart 🛒");
-
-      // optional: still update local cart (your context)
+    try {
       const cartProduct: Product = {
         id: product.id,
         name: product.product_name,
@@ -120,22 +101,26 @@ if (!sessionId) {
           Number(product.price) +
           (Number(product.price) *
             Number(product.discount || 0)) /
-            100,
+          100,
         rating: 4.5,
         image: product.product_images
-          ? `${BASE_URL}/uploads/products/${
-              product.product_images.split(",")[0]
-            }`
+          ? `${BASE_URL}/uploads/products/${product.product_images.split(",")[0]
+          }`
           : "https://via.placeholder.com/300",
         description: product.product_description,
       };
 
-      addToCart(cartProduct, 1);
+      // ✅ ONLY THIS (NO EXTRA API CALL)
+      await addToCart(cartProduct, 1);
+
+      toast.success("Added to cart 🛒");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add to cart");
     }
-  } catch (err) {
-    console.error("❌ Add to cart error:", err);
-  }
-};
+
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -297,11 +282,10 @@ if (!sessionId) {
                   {filteredProducts.map((product) => {
                     const image =
                       product.product_images
-                        ? `${BASE_URL}/uploads/products/${
-                            product.product_images.split(
-                              ','
-                            )[0]
-                          }`
+                        ? `${BASE_URL}/uploads/products/${product.product_images.split(
+                          ','
+                        )[0]
+                        }`
                         : 'https://via.placeholder.com/300';
 
                     const originalPrice =
@@ -310,7 +294,7 @@ if (!sessionId) {
                         Number(
                           product.discount || 0
                         )) /
-                        100;
+                      100;
 
                     return (
                       <div
