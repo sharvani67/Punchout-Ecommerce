@@ -48,7 +48,7 @@ const Cart: React.FC = () => {
           </div>
           <h2 className="text-3xl font-bold text-gray-800 mb-3">Your Cart is Empty</h2>
           <p className="text-gray-600 mb-8">Looks like you haven't added any items to your cart yet.</p>
-          <Link to="/products">
+          <Link to="/dynamic-products">
             <Button className="bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 hover:scale-105 transition-all duration-300 rounded-xl px-8 py-6 text-lg">
               Continue Shopping
             </Button>
@@ -62,7 +62,7 @@ const Cart: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-12">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <Link to="/products" className="inline-flex items-center text-gray-600 hover:text-orange-500 transition-colors">
+          <Link to="/dynamic-products" className="inline-flex items-center text-gray-600 hover:text-orange-500 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-1" />
             Continue Shopping
           </Link>

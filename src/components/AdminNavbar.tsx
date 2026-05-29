@@ -348,6 +348,7 @@ const navItems = [
   { path: '/admin/productstable', label: 'Products' },
   { path: '/admin/categories-table', label: 'Product Categories' },
   { path: '/admin/sessions', label: 'Sessions' },
+  { path: '/admin/checkout-details', label: 'Checkout Details' },
 ];
 
 export default function AdminNavbar() {

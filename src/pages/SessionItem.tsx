@@ -5,12 +5,19 @@ import { useParams } from "react-router-dom";
 import BASE_URL from "@/Config/Api";
 
 interface SessionItem {
-  id: number;
-  session_id: string;
-  product_name: string;
+  product_id: number;
+  name: string;
   price: string;
   quantity: number;
-  added_at: string;
+}
+
+interface Checkout {
+  id: number;
+  session_id: string;
+  buyer_id: number;
+  buyer_email: string;
+  total: string;
+  created_at: string;
 }
 
 interface Activity {
@@ -22,6 +29,7 @@ interface Activity {
 }
 
 interface SessionDetails {
+  checkout: Checkout | null;
   items: SessionItem[];
   activity: Activity[];
 }
@@ -31,6 +39,7 @@ export default function SessionDetailsPage() {
 
   const [sessionData, setSessionData] =
     useState<SessionDetails>({
+      checkout: null,
       items: [],
       activity: [],
     });
@@ -60,17 +69,9 @@ export default function SessionDetailsPage() {
     fetchSessionDetails();
   }, []);
 
-  // =========================================
-  // TOTAL CALCULATION
-  // =========================================
-
-  const totalAmount =
-    sessionData.items.reduce(
-      (acc, item) =>
-        acc +
-        Number(item.price) * item.quantity,
-      0
-    );
+  const totalAmount = Number(
+    sessionData.checkout?.total || 0
+  );
 
   if (loading) {
     return (
@@ -100,11 +101,52 @@ export default function SessionDetailsPage() {
           </p>
         </div>
 
+        {/* BUYER DETAILS */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+              <p className="text-sm text-gray-500">
+                Buyer Email
+              </p>
+
+              <p className="font-semibold text-lg">
+                {sessionData.checkout?.buyer_email ||
+                  "-"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">
+                Buyer ID
+              </p>
+
+              <p className="font-semibold text-lg">
+                {sessionData.checkout?.buyer_id ||
+                  "-"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">
+                Checkout Date
+              </p>
+
+              <p className="font-semibold text-lg">
+                {sessionData.checkout?.created_at
+                  ? new Date(
+                      sessionData.checkout.created_at
+                    ).toLocaleString()
+                  : "-"}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* SUMMARY CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-gray-500 text-sm">
-              Total Items
+              Total Products
             </h2>
 
             <p className="text-3xl font-bold mt-2">
@@ -128,7 +170,7 @@ export default function SessionDetailsPage() {
 
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h2 className="text-gray-500 text-sm">
-              Total Amount
+              Checkout Total
             </h2>
 
             <p className="text-3xl font-bold mt-2 text-green-600">
@@ -138,11 +180,11 @@ export default function SessionDetailsPage() {
           </div>
         </div>
 
-        {/* CART ITEMS */}
+        {/* PURCHASED ITEMS */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-10">
           <div className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-6 py-4">
             <h2 className="text-xl font-semibold">
-              Cart Items
+              Purchased Items
             </h2>
           </div>
 
@@ -152,6 +194,10 @@ export default function SessionDetailsPage() {
                 <tr>
                   <th className="p-4 text-center">
                     S.No
+                  </th>
+
+                  <th className="p-4 text-center">
+                    Product ID
                   </th>
 
                   <th className="p-4 text-center">
@@ -169,10 +215,6 @@ export default function SessionDetailsPage() {
                   <th className="p-4 text-center">
                     Total
                   </th>
-
-                  <th className="p-4 text-center">
-                    Added At
-                  </th>
                 </tr>
               </thead>
 
@@ -181,15 +223,23 @@ export default function SessionDetailsPage() {
                   sessionData.items.map(
                     (item, index) => (
                       <tr
-                        key={item.id}
+                        key={
+                          item.product_id
+                        }
                         className="border-b hover:bg-gray-50"
                       >
                         <td className="p-4 text-center">
                           {index + 1}
                         </td>
 
+                        <td className="p-4 text-center">
+                          {
+                            item.product_id
+                          }
+                        </td>
+
                         <td className="p-4 text-center font-medium">
-                          {item.product_name}
+                          {item.name}
                         </td>
 
                         <td className="p-4 text-center">
@@ -208,13 +258,8 @@ export default function SessionDetailsPage() {
                           {(
                             Number(
                               item.price
-                            ) * item.quantity
-                          ).toLocaleString()}
-                        </td>
-
-                        <td className="p-4 text-center whitespace-nowrap">
-                          {new Date(
-                            item.added_at
+                            ) *
+                            item.quantity
                           ).toLocaleString()}
                         </td>
                       </tr>
@@ -226,7 +271,7 @@ export default function SessionDetailsPage() {
                       colSpan={6}
                       className="text-center py-6 text-gray-500"
                     >
-                      No cart items found
+                      No purchased items found
                     </td>
                   </tr>
                 )}

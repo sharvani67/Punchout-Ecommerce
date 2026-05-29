@@ -31,6 +31,7 @@ import DynamicProducts from "./pages/DynamicProducts";
 
 import { CartProvider } from "./context/CartContext";
 import Sessions from "./pages/Sessions";
+import CheckoutDetails from "./pages/CheckoutDetails";
 
 // IMPORT THE NEW ProductDetails COMPONENT
 import ProductDetails from "./pages/ProductDetails";
@@ -176,6 +177,15 @@ const App = () => {
                   element={
                     <ProtectedRoute>
                       <ProductForm />
+                    </ProtectedRoute>
+                  }
+                />
+
+                 <Route
+                  path="/admin/checkout-details"
+                  element={
+                    <ProtectedRoute>
+                      <CheckoutDetails />
                     </ProtectedRoute>
                   }
                 />

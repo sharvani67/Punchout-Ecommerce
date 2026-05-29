@@ -17,7 +17,7 @@ import BASE_URL from '@/Config/Api';
 const Products: React.FC = () => {
   const { addToCart } = useCart();
 
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]); 
 
   const [loading, setLoading] = useState(true);
 
@@ -82,45 +82,48 @@ const Products: React.FC = () => {
     });
 
   const handleAddToCart = async (product: any) => {
-    const sessionId = localStorage.getItem("sessionId");
+  const sessionId = localStorage.getItem("sessionId");
 
-    if (!sessionId) {
-      toast.error("Session expired. Please login again.");
-      return;
-    }
+  if (!sessionId) {
+    toast.error("Session expired. Please login again.");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const cartProduct: Product = {
-        id: product.id,
-        name: product.product_name,
-        category: product.category_name,
-        price: Number(product.price),
-        originalPrice:
-          Number(product.price) +
-          (Number(product.price) *
-            Number(product.discount || 0)) /
-          100,
-        rating: 4.5,
-        image: product.product_images
-          ? `${BASE_URL}/uploads/products/${product.product_images.split(",")[0]
-          }`
-          : "https://via.placeholder.com/300",
-        description: product.product_description,
-      };
+  try {
+    const image = product.product_images
+      ? `${BASE_URL}/uploads/products/${product.product_images.split(",")[0]}`
+      : "https://via.placeholder.com/300";
 
-      // ✅ ONLY THIS (NO EXTRA API CALL)
-      await addToCart(cartProduct, 1);
+    const originalPrice = Number(product.price) || 0;
+    const discount = Number(product.discount) || 0;
 
-      toast.success("Added to cart 🛒");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to add to cart");
-    }
+    // Same logic as ProductDetail page
+    const sellingPrice =
+      originalPrice * (1 - discount / 100);
 
-    setLoading(false);
-  };
+    const cartProduct: Product = {
+      id: product.id,
+      name: product.product_name,
+      category: product.category_name,
+      price: sellingPrice,
+      originalPrice: originalPrice,
+      rating: 4.5,
+      image: image,
+      description: product.product_description,
+    };
+
+    await addToCart(cartProduct, 1);
+
+    toast.success("Added to cart 🛒");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to add to cart");
+  }
+
+  setLoading(false);
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -288,13 +291,14 @@ const Products: React.FC = () => {
                         }`
                         : 'https://via.placeholder.com/300';
 
-                    const originalPrice =
-                      Number(product.price) +
-                      (Number(product.price) *
-                        Number(
-                          product.discount || 0
-                        )) /
-                      100;
+                    const originalPrice = Number(product.price) || 0;
+
+const discountedPrice =
+  originalPrice *
+  (1 - (Number(product.discount) || 0) / 100);
+
+const hasDiscount =
+  Number(product.discount) > 0;
 
                     return (
                       <div
@@ -357,23 +361,25 @@ const Products: React.FC = () => {
                           </div>
 
                           {/* PRICE */}
-                          <div className="flex items-center justify-between mb-4">
-                            <div>
-                              <span className="text-2xl font-bold text-gray-800">
-                                ₹
-                                {
-                                  product.price
-                                }
-                              </span>
+                        <div className="flex items-center justify-between mb-4">
+  <div>
+    {hasDiscount ? (
+      <>
+        <span className="text-2xl font-bold text-gray-800">
+          ₹{discountedPrice.toFixed(2)}
+        </span>
 
-                              <span className="text-sm text-gray-400 line-through ml-2">
-                                ₹
-                                {originalPrice.toFixed(
-                                  2
-                                )}
-                              </span>
-                            </div>
-                          </div>
+        <span className="text-sm text-gray-400 line-through ml-2">
+          ₹{originalPrice.toFixed(2)}
+        </span>
+      </>
+    ) : (
+      <span className="text-2xl font-bold text-gray-800">
+        ₹{originalPrice.toFixed(2)}
+      </span>
+    )}
+  </div>
+</div>
 
                           {/* BUTTONS - NOW SAME SIZE */}
                           <div className="grid grid-cols-2 gap-2">
