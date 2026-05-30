@@ -9,35 +9,38 @@ const Cart: React.FC = () => {
   const { cartItems, cartTotal, removeFromCart, updateQuantity, clearCart } = useCart();
 
  // ✅ FIXED checkout function
-  const handleCheckout = async () => {
-    try {
-      const sessionId = localStorage.getItem("sessionId");
+ const handleCheckout = async () => {
+  try {
+    const sessionId = localStorage.getItem("sessionId");
 
-      if (!sessionId) {
-        alert("Session missing");
-        return;
-      }
-
-      const res = await fetch(`${BASE_URL}/api/supplier/checkout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ sessionId }),
-      });
-
-      const html = await res.text();
-
-      // ✅ PunchOut redirect
-      document.open();
-      document.write(html);
-      document.close();
-
-    } catch (err) {
-      console.error(err);
-      alert("Checkout failed");
+    if (!sessionId) {
+      alert("Session missing");
+      return;
     }
-  };
+
+    const res = await fetch(`${BASE_URL}/api/supplier/checkout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ sessionId }),
+    });
+
+    const html = await res.text();
+
+    // ✅ Remove sessionId from localStorage
+    localStorage.removeItem("sessionId");
+
+    // ✅ PunchOut redirect
+    document.open();
+    document.write(html);
+    document.close();
+
+  } catch (err) {
+    console.error(err);
+    alert("Checkout failed");
+  }
+};
 
   if (cartItems.length === 0) {
     return (
