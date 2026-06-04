@@ -83,6 +83,8 @@ const App = () => {
                 <Route path="/cart" element={<Cart />} />
               </Route> */}
 
+               <Route path="/unauthorized" element={<Unauthorized/>} />
+
               <Route element={<Layout />}>
   <Route
     path="/"
@@ -92,7 +94,7 @@ const App = () => {
       </PunchoutRoute>
     }
   />
-  <Route path="/unauthorized" element={<Unauthorized/>} />
+ 
 
   <Route
     path="/products"
