@@ -15,11 +15,11 @@ interface Product {
   product_category_id: string;
   product_brand: string;
   price: string;
-  available_stock: string;
+  // available_stock: string;
   dimensions: string;
   specifications: string;
   weight: string;
-  color: string;
+  // color: string;
   discount: string;
   product_description: string;
   warranty: string;
@@ -36,17 +36,17 @@ export default function ProductForm() {
     product_category_id: "",
     product_brand: "",
     price: "",
-    available_stock: "",
+    // available_stock: "",
     dimensions: "",
     specifications: "",
     weight: "",
-    color: "",
+    // color: "",
     discount: "",
     product_description: "",
     warranty: "",
   });
 
-  const [images, setImages] = useState<File[]>([]);
+  // const [images, setImages] = useState<File[]>([]);
   const [pdf, setPdf] = useState<File | null>(null);
 
   const [preview, setPreview] = useState<string[]>([]);
@@ -86,17 +86,17 @@ export default function ProductForm() {
   // MULTIPLE IMAGES
   // =========================================
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = Array.from(e.target.files || []);
 
-    setImages(files);
+  //   setImages(files);
 
-    const imagePreviews = files.map((file) =>
-      URL.createObjectURL(file)
-    );
+  //   const imagePreviews = files.map((file) =>
+  //     URL.createObjectURL(file)
+  //   );
 
-    setPreview(imagePreviews);
-  };
+  //   setPreview(imagePreviews);
+  // };
 
   // =========================================
   // PDF
@@ -138,9 +138,9 @@ const handleSubmit = async (
     // MULTIPLE IMAGES
     // =====================================
 
-    images.forEach((img) => {
-      data.append("product_images", img);
-    });
+    // images.forEach((img) => {
+    //   data.append("product_images", img);
+    // });
 
     // =====================================
     // PDF FILE
@@ -159,7 +159,7 @@ const handleSubmit = async (
 
     console.log("Form Data:", form);
 
-    console.log("Images:", images);
+    // console.log("Images:", images);
 
     console.log("PDF:", pdf);
 
@@ -377,7 +377,7 @@ const handleSubmit = async (
           </div>
 
           {/* Stock */}
-          <div>
+          {/* <div>
             <label className="label">Available Stock</label>
 
             <input
@@ -387,7 +387,7 @@ const handleSubmit = async (
               onChange={handleChange}
               className="input"
             />
-          </div>
+          </div> */}
 
           {/* Weight */}
           <div>
@@ -403,7 +403,7 @@ const handleSubmit = async (
           </div>
 
           {/* Color */}
-          <div>
+          {/* <div>
             <label className="label">Color</label>
 
             <input
@@ -413,7 +413,7 @@ const handleSubmit = async (
               onChange={handleChange}
               className="input"
             />
-          </div>
+          </div> */}
 
           {/* Discount */}
           <div>
@@ -442,7 +442,7 @@ const handleSubmit = async (
           </div>
 
           {/* Multiple Images */}
-          <div>
+          {/* <div>
             <label className="label">
               Product Images
             </label>
@@ -465,7 +465,7 @@ const handleSubmit = async (
                 />
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* PDF */}
           <div>

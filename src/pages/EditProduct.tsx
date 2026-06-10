@@ -15,11 +15,11 @@ interface Product {
   product_category_id: string;
   product_brand: string;
   price: string;
-  available_stock: string;
+  // available_stock: string;
   dimensions: string;
   specifications: string;
   weight: string;
-  color: string;
+  // color: string;
   discount: string;
   product_description: string;
   warranty: string;
@@ -40,19 +40,19 @@ export default function EditProduct() {
     product_category_id: "",
     product_brand: "",
     price: "",
-    available_stock: "",
+    // available_stock: "",
     dimensions: "",
     specifications: "",
     weight: "",
-    color: "",
+    // color: "",
     discount: "",
     product_description: "",
     warranty: "",
   });
 
-  const [images, setImages] = useState<File[]>(
-    []
-  );
+  // const [images, setImages] = useState<File[]>(
+  //   []
+  // );
 
   const [pdf, setPdf] = useState<File | null>(
     null
@@ -62,8 +62,8 @@ export default function EditProduct() {
     string[]
   >([]);
 
-  const [existingImages, setExistingImages] =
-    useState<string[]>([]);
+  // const [existingImages, setExistingImages] =
+  //   useState<string[]>([]);
 
   const [existingPdf, setExistingPdf] =
     useState("");
@@ -111,14 +111,14 @@ export default function EditProduct() {
         product_brand:
           data.product_brand || "",
         price: data.price || "",
-        available_stock:
-          data.available_stock || "",
+        // available_stock:
+        //   data.available_stock || "",
         dimensions:
           data.dimensions || "",
         specifications:
           data.specifications || "",
         weight: data.weight || "",
-        color: data.color || "",
+        // color: data.color || "",
         discount:
           data.discount || "",
         product_description:
@@ -128,11 +128,11 @@ export default function EditProduct() {
       });
 
       // Existing Images
-      if (data.product_images) {
-        setExistingImages(
-          data.product_images.split(",")
-        );
-      }
+      // if (data.product_images) {
+      //   setExistingImages(
+      //     data.product_images.split(",")
+      //   );
+      // }
 
       // Existing PDF
       if (data.product_details_pdf) {
@@ -166,21 +166,21 @@ export default function EditProduct() {
   // NEW IMAGES
   // =========================================
 
-  const handleImageChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const files = Array.from(
-      e.target.files || []
-    );
+  // const handleImageChange = (
+  //   e: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   const files = Array.from(
+  //     e.target.files || []
+  //   );
 
-    setImages(files);
+  //   setImages(files);
 
-    const previews = files.map((file) =>
-      URL.createObjectURL(file)
-    );
+  //   const previews = files.map((file) =>
+  //     URL.createObjectURL(file)
+  //   );
 
-    setPreview(previews);
-  };
+  //   setPreview(previews);
+  // };
 
   // =========================================
   // NEW PDF
@@ -200,16 +200,16 @@ export default function EditProduct() {
   // REMOVE IMAGE
   // =========================================
 
-  const removeExistingImage = (
-    img: string
-  ) => {
-    const updatedImages =
-      existingImages.filter(
-        (item) => item !== img
-      );
+  // const removeExistingImage = (
+  //   img: string
+  // ) => {
+  //   const updatedImages =
+  //     existingImages.filter(
+  //       (item) => item !== img
+  //     );
 
-    setExistingImages(updatedImages);
-  };
+  //   setExistingImages(updatedImages);
+  // };
 
   // =========================================
   // REMOVE PDF
@@ -241,10 +241,10 @@ export default function EditProduct() {
       );
 
       // EXISTING IMAGES
-      data.append(
-        "existing_images",
-        JSON.stringify(existingImages)
-      );
+      // data.append(
+      //   "existing_images",
+      //   JSON.stringify(existingImages)
+      // );
 
       // EXISTING PDF
       data.append(
@@ -253,12 +253,12 @@ export default function EditProduct() {
       );
 
       // NEW IMAGES
-      images.forEach((img) => {
-        data.append(
-          "product_images",
-          img
-        );
-      });
+      // images.forEach((img) => {
+      //   data.append(
+      //     "product_images",
+      //     img
+      //   );
+      // });
 
       // NEW PDF
       if (pdf) {
@@ -401,7 +401,7 @@ export default function EditProduct() {
           </div>
 
           {/* Stock */}
-          <div>
+          {/* <div>
             <label className="label">
               Available Stock
             </label>
@@ -415,7 +415,7 @@ export default function EditProduct() {
               onChange={handleChange}
               className="input"
             />
-          </div>
+          </div> */}
 
           {/* Weight */}
           <div>
@@ -433,7 +433,7 @@ export default function EditProduct() {
           </div>
 
           {/* Color */}
-          <div>
+          {/* <div>
             <label className="label">
               Color
             </label>
@@ -445,7 +445,7 @@ export default function EditProduct() {
               onChange={handleChange}
               className="input"
             />
-          </div>
+          </div> */}
 
           {/* Discount */}
           <div>
@@ -478,7 +478,7 @@ export default function EditProduct() {
           </div>
 
           {/* Existing Images */}
-          <div className="md:col-span-2 lg:col-span-3">
+          {/* <div className="md:col-span-2 lg:col-span-3">
             <label className="label">
               Existing Images
             </label>
@@ -511,10 +511,10 @@ export default function EditProduct() {
                 )
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Upload Images */}
-          <div>
+          {/* <div>
             <label className="label">
               Upload New Images
             </label>
@@ -541,7 +541,7 @@ export default function EditProduct() {
                 )
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Existing PDF */}
           <div>

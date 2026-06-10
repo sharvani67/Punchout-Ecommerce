@@ -345,7 +345,9 @@ import logo from '@/assets/mainlogo.png';
 
 const navItems = [
   { path: '/', label: 'Home' },
+   { path: '/admin/reports', label: 'Reports' },
   { path: '/admin/productstable', label: 'Products' },
+    { path: '/admin/productvariants', label: 'Product Color Variants' },
   { path: '/admin/categories-table', label: 'Product Categories' },
   { path: '/admin/sessions', label: 'Sessions' },
   { path: '/admin/checkout-details', label: 'Checkout Details' },
@@ -382,6 +384,10 @@ export default function AdminNavbar() {
     location.pathname.startsWith('/admin/edit-product') ||
     location.pathname.startsWith('/admin/product-details');
 
+     const isProductVariantsActive =
+    location.pathname === '/admin/productvariants' ||
+    location.pathname.startsWith('/admin/add-color-variant') ||
+    location.pathname.startsWith('/admin/edit-color-variant');
   // CATEGORIES ACTIVE
   const isCategoriesActive =
     location.pathname === '/admin/categories-table' ||
@@ -426,6 +432,8 @@ export default function AdminNavbar() {
               isActive = isCategoriesActive;
             } else if (item.path === '/admin/sessions') {
               isActive = isSessionsActive;
+            } else if (item.path === '/admin/productvariants') {
+              isActive = isProductVariantsActive;
             } else {
               isActive = location.pathname === item.path;
             }
@@ -500,6 +508,8 @@ export default function AdminNavbar() {
               isActive = isCategoriesActive;
             } else if (item.path === '/admin/sessions') {
               isActive = isSessionsActive;
+               } else if (item.path === '/admin/productvariants') {
+              isActive = isProductVariantsActive;
             } else {
               isActive = location.pathname === item.path;
             }
