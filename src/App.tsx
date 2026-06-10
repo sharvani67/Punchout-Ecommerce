@@ -37,6 +37,7 @@ import CheckoutDetails from "./pages/CheckoutDetails";
 import ProductDetails from "./pages/ProductDetails";
 import PunchoutRoute from "./PunchoutRoute";
 import Unauthorized from "./Unauthorized";
+import SessionExpired from "./SessionExpired";
 const queryClient = new QueryClient();
 
 
@@ -84,6 +85,7 @@ const App = () => {
               </Route> */}
 
                <Route path="/unauthorized" element={<Unauthorized/>} />
+               <Route path="/session-expired" element={<SessionExpired/>} />
 
               <Route element={<Layout />}>
   <Route
