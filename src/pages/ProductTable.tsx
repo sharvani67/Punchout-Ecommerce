@@ -377,12 +377,10 @@ interface Product {
   product_code: string;
   category_name: string;
   product_brand: string;
-  product_images?: string;
+  // product_images?: string;
   product_details_pdf?: string;
   price: string;
-  available_stock: string;
   weight: string;
-  color: string;
   discount: string;
   warranty: string;
 }
@@ -400,7 +398,7 @@ export default function ProductTable() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/products`);
+      const res = await axios.get(`${BASE_URL}/api/products/products-with-variants`);
       setProducts(res.data);
     } catch (error) {
       console.log(error);
@@ -478,14 +476,12 @@ export default function ProductTable() {
           <table className="min-w-full text-sm">
             <thead className="bg-gradient-to-r from-orange-500 to-pink-500 text-white">
               <tr>
-                <th className="p-4 text-center">Image</th>
+                {/* <th className="p-4 text-center">Image</th> */}
                 <th className="p-4 text-center">Product Name</th>
                 <th className="p-4 text-center">Code</th>
                 <th className="p-4 text-center">Category</th>
                 <th className="p-4 text-center">Brand</th>
                 <th className="p-4 text-center">Price</th>
-                <th className="p-4 text-center">Stock</th>
-                <th className="p-4 text-center">Color</th>
                 <th className="p-4 text-center">Warranty</th>
                 <th className="p-4 text-center">PDF</th>
                 <th className="p-4 text-center">Actions</th>
@@ -495,11 +491,11 @@ export default function ProductTable() {
             <tbody>
               {paginatedProducts.length > 0 ? (
                 paginatedProducts.map((p) => {
-                  const firstImage = p.product_images?.split(",")[0];
+                  // const firstImage = p.product_images?.split(",")[0];
                   return (
                     <tr key={p.id} className="border-b hover:bg-gray-50 transition">
                       {/* IMAGE */}
-                      <td className="p-4 text-center">
+                      {/* <td className="p-4 text-center">
                         {firstImage ? (
                           <img
                             src={`${BASE_URL}/uploads/products/${firstImage}`}
@@ -509,7 +505,7 @@ export default function ProductTable() {
                         ) : (
                           <span className="text-gray-400">No Image</span>
                         )}
-                      </td>
+                      </td> */}
 
                       {/* NAME */}
                       <td className="p-4 font-medium text-center">{p.product_name}</td>
@@ -527,12 +523,6 @@ export default function ProductTable() {
                       <td className="p-4 font-semibold text-green-600 text-center">
                         ₹{p.price}
                       </td>
-
-                      {/* STOCK */}
-                      <td className="p-4 text-center">{p.available_stock}</td>
-
-                      {/* COLOR */}
-                      <td className="p-4 text-center">{p.color}</td>
 
                       {/* WARRANTY */}
                       <td className="p-4 text-center">{p.warranty}</td>

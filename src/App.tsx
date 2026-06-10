@@ -17,6 +17,7 @@ import ProtectedRoute from "./test/ProtectedRoute";
 import ProductTable from "./pages/ProductTable";
 import ProductForm from "./pages/ProductsForm";
 import CategoryTable from "./pages/CategoryTable";
+import VariantForm from "./pages/VariantForm";
 import CategoryForm from "./pages/CategoryForm";
 
 import Home from "./pages/Home";
@@ -32,12 +33,15 @@ import DynamicProducts from "./pages/DynamicProducts";
 import { CartProvider } from "./context/CartContext";
 import Sessions from "./pages/Sessions";
 import CheckoutDetails from "./pages/CheckoutDetails";
+import EditVariant from "./pages/EditVariantForm";
 
 // IMPORT THE NEW ProductDetails COMPONENT
 import ProductDetails from "./pages/ProductDetails";
 import PunchoutRoute from "./PunchoutRoute";
 import Unauthorized from "./Unauthorized";
 import SessionExpired from "./SessionExpired";
+import Reports from "./pages/Dashboard";
+import ProductColorVariants from "./pages/ProductColorVariants";
 const queryClient = new QueryClient();
 
 
@@ -153,6 +157,41 @@ const App = () => {
                   element={
                     <ProtectedRoute>
                       <ProductTable />
+                    </ProtectedRoute>
+                  }
+                />
+
+                 <Route
+                  path="/admin/reports"
+                  element={
+                    <ProtectedRoute>
+                      <Reports />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/admin/productvariants"
+                  element={
+                    <ProtectedRoute>
+                      <ProductColorVariants />
+                    </ProtectedRoute>
+                  }
+                />
+
+                  <Route
+                  path="/admin/add-color-variants"
+                  element={
+                    <ProtectedRoute>
+                      <VariantForm />
+                    </ProtectedRoute>
+                  }
+                />
+                 <Route
+                  path="/admin/edit-variant/:id"
+                  element={
+                    <ProtectedRoute>
+                      <EditVariant />
                     </ProtectedRoute>
                   }
                 />
