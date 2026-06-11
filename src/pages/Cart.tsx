@@ -4,6 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import BASE_URL from '@/Config/Api';
+import api from "@/Api";
 
 const Cart: React.FC = () => {
   const { cartItems, cartTotal, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -18,15 +19,15 @@ const Cart: React.FC = () => {
       return;
     }
 
-    const res = await fetch(`${BASE_URL}/api/supplier/checkout`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sessionId }),
-    });
+    const res = await api.post(
+  "api/supplier/checkout",
+  { sessionId },
+  {
+    responseType: "text",
+  }
+);
 
-    const html = await res.text();
+const html = res.data;
 
     // ✅ Remove sessionId from localStorage
     localStorage.removeItem("sessionId");

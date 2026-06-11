@@ -1,7 +1,14 @@
 // pages/SessionExpired.tsx
+import { useEffect } from "react";
 import { Clock } from "lucide-react";
 
+
+
 const SessionExpired = () => {
+
+    useEffect(() => {
+    localStorage.removeItem("sessionId");
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 text-center">

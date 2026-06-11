@@ -587,7 +587,7 @@ const ProductDetail: React.FC = () => {
 
               {/* QUANTITY & ADD TO CART */}
               <div className="border-t border-gray-100 pt-4">
-                <div className="flex items-center gap-4 mb-4">
+                {/* <div className="flex items-center gap-4 mb-4">
                   <span className="font-semibold text-gray-800">Quantity:</span>
                   <div className="flex items-center gap-3">
                     <button
@@ -606,7 +606,7 @@ const ProductDetail: React.FC = () => {
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                </div>
+                </div> */}
 
                 <Button
                   onClick={() => handleAddToCart(product)}

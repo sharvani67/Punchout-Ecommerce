@@ -127,6 +127,7 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import BASE_URL from '@/Config/Api';
+import api from '@/Api';
 
 export interface Product {
   id: number;
@@ -186,8 +187,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     const sessionId = SessionId();
     if (!sessionId) return;
 
-    const res = await fetch(`${BASE_URL}/api/cart/get/${sessionId}`);
-    const data = await res.json();
+   const res = await api.get(`/api/cart/get/${sessionId}`);
+const data = res.data;
 
     // ✅ FIX: MAP BACKEND → FRONTEND FORMAT
     const formatted = data.map((item: any) => ({
@@ -239,17 +240,11 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     });
 
     try {
-      await fetch(`${BASE_URL}/api/cart/add-cart`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          sessionId,
-          product,
-          quantity,
-        }),
-      });
+      await api.post("/api/cart/add-cart", {
+  sessionId,
+  product,
+  quantity,
+});
 
       await loadCart(); // final sync
     } catch (err) {
@@ -262,17 +257,11 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     const sessionId = SessionId();
     if (!sessionId) return;
 
-    await fetch(`${BASE_URL}/api/cart/update-cart`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sessionId,
-        productId,
-        quantity,
-      }),
-    });
+    await api.put("/api/cart/update-cart", {
+  sessionId,
+  productId,
+  quantity,
+});
 
     await loadCart();
   };
@@ -282,16 +271,12 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     const sessionId = SessionId();
     if (!sessionId) return;
 
-    await fetch(`${BASE_URL}/api/cart/remove-cart`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sessionId,
-        productId,
-      }),
-    });
+    await api.delete("/api/cart/remove-cart", {
+  data: {
+    sessionId,
+    productId,
+  },
+});
 
     await loadCart();
   };
@@ -301,13 +286,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     const sessionId = SessionId();
     if (!sessionId) return;
 
-    await fetch(`${BASE_URL}/api/cart/clear-cart`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sessionId }),
-    });
+    await api.post("/api/cart/clear-cart", {
+  sessionId,
+});
 
     setCartItems([]);
   };

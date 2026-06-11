@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "./components/Layout";
 import AdminLayout from "./components/AdminLayout";
 import ScrollToTop from "./components/ScrollToTop";
@@ -54,10 +54,21 @@ const App = () => {
     const sessionFromUrl = params.get("session");
 
     if (sessionFromUrl) {
-      localStorage.setItem("sessionId", sessionFromUrl);
 
-      // साफ URL
-      window.history.replaceState({}, document.title, "/dynamic-products");
+      localStorage.setItem(
+        "sessionId",
+        sessionFromUrl
+      );
+
+      localStorage.removeItem(
+        "sessionExpired"
+      );
+
+      window.history.replaceState(
+        {},
+        document.title,
+        "/dynamic-products"
+      );
     }
 
     // ✅ mark ready AFTER checking
@@ -88,63 +99,63 @@ const App = () => {
                 <Route path="/cart" element={<Cart />} />
               </Route> */}
 
-               <Route path="/unauthorized" element={<Unauthorized/>} />
-               <Route path="/session-expired" element={<SessionExpired/>} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
+              <Route path="/session-expired" element={<SessionExpired />} />
 
               <Route element={<Layout />}>
-  <Route
-    path="/"
-    element={
-      <PunchoutRoute>
-        <Home />
-      </PunchoutRoute>
-    }
-  />
- 
+                <Route
+                  path="/"
+                  element={
+                    <PunchoutRoute>
+                      <Home />
+                    </PunchoutRoute>
+                  }
+                />
 
-  <Route
-    path="/products"
-    element={
-      <PunchoutRoute>
-        <Products />
-      </PunchoutRoute>
-    }
-  />
-   <Route
-    path="/product/:id"
-    element={
-      <PunchoutRoute>
-        <ProductDetail />
-      </PunchoutRoute>
-    }
-  />
-   <Route
-    path="/dynamic-product/:id"
-    element={
-      <PunchoutRoute>
-        <DynamicProductDetail />
-      </PunchoutRoute>
-    }
-  />
 
-  <Route
-    path="/dynamic-products"
-    element={
-      <PunchoutRoute>
-        <DynamicProducts />
-      </PunchoutRoute>
-    }
-  />
+                <Route
+                  path="/products"
+                  element={
+                    <PunchoutRoute>
+                      <Products />
+                    </PunchoutRoute>
+                  }
+                />
+                <Route
+                  path="/product/:id"
+                  element={
+                    <PunchoutRoute>
+                      <ProductDetail />
+                    </PunchoutRoute>
+                  }
+                />
+                <Route
+                  path="/dynamic-product/:id"
+                  element={
+                    <PunchoutRoute>
+                      <DynamicProductDetail />
+                    </PunchoutRoute>
+                  }
+                />
 
-  <Route
-    path="/cart"
-    element={
-      <PunchoutRoute>
-        <Cart />
-      </PunchoutRoute>
-    }
-  />
-</Route>
+                <Route
+                  path="/dynamic-products"
+                  element={
+                    <PunchoutRoute>
+                      <DynamicProducts />
+                    </PunchoutRoute>
+                  }
+                />
+
+                <Route
+                  path="/cart"
+                  element={
+                    <PunchoutRoute>
+                      <Cart />
+                    </PunchoutRoute>
+                  }
+                />
+              </Route>
 
               {/* ✅ ADMIN ROUTES */}
               <Route element={<AdminLayout />}>
@@ -161,7 +172,7 @@ const App = () => {
                   }
                 />
 
-                 <Route
+                <Route
                   path="/admin/reports"
                   element={
                     <ProtectedRoute>
@@ -179,7 +190,7 @@ const App = () => {
                   }
                 />
 
-                  <Route
+                <Route
                   path="/admin/add-color-variants"
                   element={
                     <ProtectedRoute>
@@ -187,7 +198,7 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
-                 <Route
+                <Route
                   path="/admin/edit-variant/:id"
                   element={
                     <ProtectedRoute>
@@ -224,7 +235,7 @@ const App = () => {
                   }
                 />
 
-                 <Route
+                <Route
                   path="/admin/checkout-details"
                   element={
                     <ProtectedRoute>
@@ -269,7 +280,7 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
-                
+
                 <Route
                   path="/admin/edit-category/:id"
                   element={
