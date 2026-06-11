@@ -121,46 +121,47 @@ const Products: React.FC = () => {
   };
 
   const handleAddToCart = async (product: ProductItem) => {
-    const sessionId = localStorage.getItem("sessionId");
-    if (!sessionId) {
-      toast.error("Session expired. Please login again.");
-      return;
-    }
+  const sessionId = localStorage.getItem("sessionId");
+  if (!sessionId) {
+    toast.error("Session expired. Please login again.");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const sv = selectedVariants[product.id];
+  setLoading(true);
+  try {
+    const sv = selectedVariants[product.id];
 
-      // Image: prefer selected variant image, else product_images fallback
-      const image = sv
-        ? resolveImageUrl(sv.images?.[0] ?? sv.image_url)
-        : product.product_images
-        ? `${BASE_URL}/uploads/products/${product.product_images.split(',')[0].trim()}`
-        : 'https://via.placeholder.com/300';
+    const image = sv
+      ? resolveImageUrl(sv.images?.[0] ?? sv.image_url)
+      : product.product_images
+      ? `${BASE_URL}/uploads/products/${product.product_images.split(',')[0].trim()}`
+      : 'https://via.placeholder.com/300';
 
-      const activePrice = sv?.price ?? product.price;
-      const sellingPrice = calcDiscountedPrice(activePrice, product.discount);
-      const originalPrice = parseFloat(activePrice) || 0;
+    const activePrice = sv?.price ?? product.price;
+    const sellingPrice = calcDiscountedPrice(activePrice, product.discount);
+    const originalPrice = parseFloat(activePrice) || 0;
 
-      const cartProduct: Product = {
-        id: product.id,
-        name: product.product_name,
-        category: product.category_name,
-        price: sellingPrice,
-        originalPrice: originalPrice,
-        rating: 4.5,
-        image: image,
-        description: product.product_description,
-      };
+    const cartProduct: Product = {
+      id: product.id,
+      variantId: sv?.id,          // ✅ ADDED — pass selected variant id
+      name: product.product_name,
+      category: product.category_name,
+      price: sellingPrice,
+      originalPrice: originalPrice,
+      rating: 4.5,
+      image: image,
+      mainImage: image,           // ✅ ADDED — needed for cart display
+      description: product.product_description,
+    };
 
-      await addToCart(cartProduct, 1);
-      toast.success("Added to cart 🛒");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to add to cart");
-    }
-    setLoading(false);
-  };
+    await addToCart(cartProduct, 1);
+    toast.success("Added to cart 🛒");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to add to cart");
+  }
+  setLoading(false);
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">

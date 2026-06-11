@@ -102,83 +102,56 @@ export default function SessionDetailsPage() {
         </div>
 
         {/* BUYER DETAILS */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div>
-              <p className="text-sm text-gray-500">
-                Buyer Email
-              </p>
+<div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+  {sessionData.checkout ? (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div>
+        <p className="text-sm text-gray-500">Buyer Email</p>
+        <p className="font-semibold text-lg">
+          {sessionData.checkout.buyer_email || "-"}
+        </p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Buyer ID</p>
+        <p className="font-semibold text-lg">
+          {sessionData.checkout.buyer_id || "-"}
+        </p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Checkout Date</p>
+        <p className="font-semibold text-lg">
+          {new Date(sessionData.checkout.created_at).toLocaleString()}
+        </p>
+      </div>
+    </div>
+  ) : (
+    // ✅ Show this for ACTIVE / EXPIRED sessions with no checkout yet
+    <p className="text-gray-500 italic">
+      No checkout record found for this session.
+    </p>
+  )}
+</div>
 
-              <p className="font-semibold text-lg">
-                {sessionData.checkout?.buyer_email ||
-                  "-"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500">
-                Buyer ID
-              </p>
-
-              <p className="font-semibold text-lg">
-                {sessionData.checkout?.buyer_id ||
-                  "-"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500">
-                Checkout Date
-              </p>
-
-              <p className="font-semibold text-lg">
-                {sessionData.checkout?.created_at
-                  ? new Date(
-                      sessionData.checkout.created_at
-                    ).toLocaleString()
-                  : "-"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* SUMMARY CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-gray-500 text-sm">
-              Total Products
-            </h2>
-
-            <p className="text-3xl font-bold mt-2">
-              {sessionData.items.length}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-gray-500 text-sm">
-              Total Quantity
-            </h2>
-
-            <p className="text-3xl font-bold mt-2">
-              {sessionData.items.reduce(
-                (acc, item) =>
-                  acc + item.quantity,
-                0
-              )}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h2 className="text-gray-500 text-sm">
-              Checkout Total
-            </h2>
-
-            <p className="text-3xl font-bold mt-2 text-green-600">
-              ₹
-              {totalAmount.toLocaleString()}
-            </p>
-          </div>
-        </div>
+{/* SUMMARY CARDS */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+  <div className="bg-white rounded-2xl shadow-lg p-6">
+    <h2 className="text-gray-500 text-sm">Total Products</h2>
+    <p className="text-3xl font-bold mt-2">{sessionData.items.length}</p>
+  </div>
+  <div className="bg-white rounded-2xl shadow-lg p-6">
+    <h2 className="text-gray-500 text-sm">Total Quantity</h2>
+    <p className="text-3xl font-bold mt-2">
+      {sessionData.items.reduce((acc, item) => acc + item.quantity, 0)}
+    </p>
+  </div>
+  <div className="bg-white rounded-2xl shadow-lg p-6">
+    <h2 className="text-gray-500 text-sm">Checkout Total</h2>
+    <p className="text-3xl font-bold mt-2 text-green-600">
+      {/* ✅ Show dash if no checkout */}
+      {sessionData.checkout ? `₹${totalAmount.toLocaleString()}` : "-"}
+    </p>
+  </div>
+</div>
 
         {/* PURCHASED ITEMS */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-10">

@@ -77,63 +77,64 @@ const html = res.data;
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map(item => (
-              <div key={item.id} className="bg-white rounded-2xl shadow-lg p-6 transition-all hover:shadow-xl">
-                <div className="flex flex-col sm:flex-row gap-6">
-                  <div className="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
-                    <img
-                      src={item.mainImage || item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
-                      <div>
-                        <h3 className="font-bold text-lg text-gray-800 mb-1">{item.name}</h3>
-                        <p className="text-sm text-gray-500">{item.category}</p>
-                      </div>
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                    
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                      <div className="flex items-center gap-3">
-                        <span className="text-gray-600">Quantity:</span>
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-orange-500 hover:text-orange-500 transition-colors"
-                          >
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <span className="font-semibold text-gray-800 w-8 text-center">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-orange-500 hover:text-orange-500 transition-colors"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-gray-800">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          ${item.price.toFixed(2)} each
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+{cartItems.map(item => (
+  <div key={`${item.id}-${item.variantId ?? 'no-variant'}`}
+    className="bg-white rounded-2xl shadow-lg p-6 transition-all hover:shadow-xl">
+    <div className="flex flex-col sm:flex-row gap-6">
+      <div className="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+        <img
+          src={item.mainImage || item.image}
+          alt={item.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      <div className="flex-1">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+          <div>
+            <h3 className="font-bold text-lg text-gray-800 mb-1">{item.name}</h3>
+            <p className="text-sm text-gray-500">{item.category}</p>
+          </div>
+          <button
+            onClick={() => removeFromCart(item.id, item.variantId)}
+            className="text-red-500 hover:text-red-700 transition-colors"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-gray-600">Quantity:</span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => updateQuantity(item.id, item.variantId, item.quantity - 1)}
+                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-orange-500 hover:text-orange-500 transition-colors"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="font-semibold text-gray-800 w-8 text-center">{item.quantity}</span>
+              <button
+                onClick={() => updateQuantity(item.id, item.variantId, item.quantity + 1)}
+                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-orange-500 hover:text-orange-500 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-gray-800">
+              ₹{(item.price * item.quantity).toFixed(2)}  {/* ✅ changed $ to ₹ */}
+            </div>
+            <div className="text-sm text-gray-500">
+              ₹{item.price.toFixed(2)} each
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+))}
           </div>
 
           {/* Order Summary */}

@@ -274,43 +274,44 @@ const ProductDetail: React.FC = () => {
   // =========================================
 
   const handleAddToCart = async (product: any) => {
-    const sessionId = localStorage.getItem("sessionId");
+  const sessionId = localStorage.getItem("sessionId");
 
-    if (!sessionId) {
-      toast.error("Session expired. Please login again.");
-      return;
-    }
+  if (!sessionId) {
+    toast.error("Session expired. Please login again.");
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      // Use variant image if available, else product image
-      const image = hasVariants && selectedVariant
-        ? resolveImageUrl(selectedVariant.images?.[0] ?? selectedVariant.image_url)
-        : product.product_images
-          ? `${BASE_URL}/uploads/products/${product.product_images.split(",")[0]}`
-          : "https://via.placeholder.com/300";
+  try {
+    const image = hasVariants && selectedVariant
+      ? resolveImageUrl(selectedVariant.images?.[0] ?? selectedVariant.image_url)
+      : product.product_images
+        ? `${BASE_URL}/uploads/products/${product.product_images.split(",")[0].trim()}`
+        : "https://via.placeholder.com/300";
 
-      const cartProduct: Product = {
-        id: product.id,
-        name: product.product_name || "No Name",
-        category: product.category_name || "General",
-        price: discountedPrice,       // ✅ selling price after discount
-        originalPrice: originalPrice, // optional
-        rating: 4.5,
-        image: image,
-        description: product.product_description || "",
-      };
+    const cartProduct: Product = {
+      id: product.id,
+      variantId: selectedVariant?.id ?? undefined,   // ✅ ADDED — selected variant id
+      name: product.product_name || "No Name",
+      category: product.category_name || getCategoryName(),
+      price: discountedPrice,
+      originalPrice: originalPrice,
+      rating: 4.5,
+      image: image,
+      mainImage: image,                              // ✅ ADDED — for cart display
+      description: product.product_description || "",
+    };
 
-      await addToCart(cartProduct, quantity);
-      toast.success("Added to cart 🛒");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to add to cart");
-    }
+    await addToCart(cartProduct, quantity);
+    toast.success("Added to cart 🛒");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to add to cart");
+  }
 
-    setLoading(false);
-  };
+  setLoading(false);
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">

@@ -148,9 +148,9 @@ export default function AllSessionsTable() {
         Session ID
       </th>
 
-      <th className="p-4 text-center">
+      {/* <th className="p-4 text-center">
         Buyer ID
-      </th>
+      </th> */}
 
       <th className="p-4 text-center">
         Buyer Email
@@ -164,17 +164,17 @@ export default function AllSessionsTable() {
         Identity
       </th>
 
-      <th className="p-4 text-center">
+      {/* <th className="p-4 text-center">
         Shared Secret
-      </th>
+      </th> */}
 
       <th className="p-4 text-center">
         Total Amount
       </th>
 
-      <th className="p-4 text-center">
+      {/* <th className="p-4 text-center">
         Purchased Items
-      </th>
+      </th> */}
 
       <th className="p-4 text-center">
         Created At
@@ -210,10 +210,10 @@ export default function AllSessionsTable() {
                 {session.session_id}
               </span>
             </td>
-
+{/* 
             <td className="p-4 text-center">
               {session.buyer_id}
-            </td>
+            </td> */}
 
             <td className="p-4 text-center">
               {session.buyer_email}
@@ -227,9 +227,9 @@ export default function AllSessionsTable() {
               {session.identity}
             </td>
 
-            <td className="p-4 text-center">
+            {/* <td className="p-4 text-center">
               {session.shared_secret}
-            </td>
+            </td> */}
 
             <td className="p-4 text-center font-bold text-green-600">
               ₹
@@ -238,7 +238,7 @@ export default function AllSessionsTable() {
               ).toLocaleString()}
             </td>
 
-            <td className="p-4">
+            {/* <td className="p-4">
               <div className="space-y-1 min-w-[220px]">
                 {session.items?.map(
                   (item, idx) => (
@@ -265,7 +265,7 @@ export default function AllSessionsTable() {
                   )
                 )}
               </div>
-            </td>
+            </td> */}
 
             <td className="p-4 text-center whitespace-nowrap">
               {new Date(

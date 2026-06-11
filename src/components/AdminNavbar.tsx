@@ -344,8 +344,8 @@ import { Button } from '@/components/ui/button';
 import logo from '@/assets/mainlogo.png';
 
 const navItems = [
-  { path: '/', label: 'Home' },
-   { path: '/admin/reports', label: 'Reports' },
+  // { path: '/', label: 'Home' },
+   { path: '/admin/reports', label: 'Dashboard' },
   { path: '/admin/productstable', label: 'Products' },
     { path: '/admin/productvariants', label: 'Product Color Variants' },
   { path: '/admin/categories-table', label: 'Product Categories' },
