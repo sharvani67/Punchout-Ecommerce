@@ -145,7 +145,7 @@ const html = res.data;
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between py-3 border-b border-gray-200">
                   <span className="text-gray-600">Subtotal</span>
-                  <span className="font-semibold text-gray-800">${cartTotal.toFixed(2)}</span>
+                  <span className="font-semibold text-gray-800">₹{cartTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-200">
                   <span className="text-gray-600">Shipping</span>
@@ -153,12 +153,12 @@ const html = res.data;
                 </div>
                 <div className="flex justify-between py-3 border-b border-gray-200">
                   <span className="text-gray-600">Tax (10%)</span>
-                  <span className="font-semibold text-gray-800">${(cartTotal * 0.1).toFixed(2)}</span>
+                  <span className="font-semibold text-gray-800">₹{(cartTotal * 0.1).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between py-3 text-lg font-bold">
                   <span className="text-gray-800">Total</span>
                   <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
-                    ${(cartTotal + cartTotal * 0.1).toFixed(2)}
+                    ₹{(cartTotal + cartTotal * 0.1).toFixed(2)}
                   </span>
                 </div>
               </div>

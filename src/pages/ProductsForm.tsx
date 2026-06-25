@@ -118,6 +118,15 @@ const handleSubmit = async (
   e: React.FormEvent
 ) => {
   e.preventDefault();
+  if (
+  !form.product_name.trim() ||
+  !form.product_code.trim() ||
+  !form.product_brand.trim() ||
+  !form.product_description.trim()
+) {
+  alert("Please fill all mandatory fields (*)");
+  return;
+}
 
   setLoading(true);
 
@@ -305,33 +314,41 @@ const handleSubmit = async (
         >
           {/* Product Name */}
           <div>
-            <label className="label">Product Name</label>
-            <input
-              type="text"
-              name="product_name"
-              value={form.product_name}
-              onChange={handleChange}
-              className="input"
-              required
-            />
+            <label className="label">
+  Product Name <span className="text-red-500">*</span>
+</label>
+
+<input
+  type="text"
+  name="product_name"
+  value={form.product_name}
+  onChange={handleChange}
+  className="input"
+  required
+/>
           </div>
 
           {/* Product Code */}
           <div>
-            <label className="label">Product Code</label>
-            <input
-              type="text"
-              name="product_code"
-              value={form.product_code}
-              onChange={handleChange}
-              className="input"
-              required
-            />
+           <label className="label">
+  Product Code <span className="text-red-500">*</span>
+</label>
+
+<input
+  type="text"
+  name="product_code"
+  value={form.product_code}
+  onChange={handleChange}
+  className="input"
+  required
+/>
           </div>
 
           {/* Category */}
           <div>
-            <label className="label">Product Category</label>
+           <label className="label">
+  Product Category <span className="text-red-500">*</span>
+</label>
 
             <select
               name="product_category_id"
@@ -352,29 +369,36 @@ const handleSubmit = async (
 
           {/* Brand */}
           <div>
-            <label className="label">Product Brand</label>
+          <label className="label">
+  Product Brand <span className="text-red-500">*</span>
+</label>
 
-            <input
-              type="text"
-              name="product_brand"
-              value={form.product_brand}
-              onChange={handleChange}
-              className="input"
-            />
+<input
+  type="text"
+  name="product_brand"
+  value={form.product_brand}
+  onChange={handleChange}
+  className="input"
+  required
+/>
           </div>
 
           {/* Price */}
-          <div>
-            <label className="label">Price</label>
+          {/* <div>
+           <label className="label">
+  Price <span className="text-red-500">*</span>
+</label>
 
-            <input
-              type="number"
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              className="input"
-            />
-          </div>
+<input
+  type="number"
+  name="price"
+  value={form.price}
+  onChange={handleChange}
+  className="input"
+  min="1"
+  required
+/>
+          </div> */}
 
           {/* Stock */}
           {/* <div>
@@ -510,16 +534,17 @@ const handleSubmit = async (
           {/* Description */}
           <div className="md:col-span-2 lg:col-span-3">
             <label className="label">
-              Product Description
-            </label>
+  Product Description <span className="text-red-500">*</span>
+</label>
 
-            <textarea
-              rows={5}
-              name="product_description"
-              value={form.product_description}
-              onChange={handleChange}
-              className="input"
-            />
+<textarea
+  rows={5}
+  name="product_description"
+  value={form.product_description}
+  onChange={handleChange}
+  className="input"
+  required
+/>
           </div>
 
           {/* Submit */}

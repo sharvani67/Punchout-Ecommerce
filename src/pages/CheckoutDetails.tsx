@@ -180,9 +180,9 @@ export default function AllSessionsTable() {
         Created At
       </th>
 
-      <th className="p-4 text-center">
+      {/* <th className="p-4 text-center">
         Actions
-      </th>
+      </th> */}
     </tr>
   </thead>
 
@@ -273,7 +273,7 @@ export default function AllSessionsTable() {
               ).toLocaleString()}
             </td>
 
-            <td className="p-4">
+            {/* <td className="p-4">
               <div className="flex justify-center">
                 <button
                   onClick={() =>
@@ -291,7 +291,7 @@ export default function AllSessionsTable() {
                   />
                 </button>
               </div>
-            </td>
+            </td> */}
           </tr>
         )
       )

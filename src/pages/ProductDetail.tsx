@@ -293,12 +293,12 @@ const ProductDetail: React.FC = () => {
                   <span className="text-gray-600">{product.rating} out of 5 stars</span>
                 </div>
                 <div className="flex items-baseline gap-3 mb-4">
-                  <span className="text-3xl font-bold text-gray-800">${product.price}</span>
+                  <span className="text-3xl font-bold text-gray-800">₹{product.price}</span>
                   {product.originalPrice && (
                     <>
-                      <span className="text-lg text-gray-400 line-through">${product.originalPrice}</span>
+                      <span className="text-lg text-gray-400 line-through">₹{product.originalPrice}</span>
                       <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm font-bold px-2 py-1 rounded-full">
-                        Save ${(product.originalPrice - product.price).toFixed(2)}
+                        Save ₹{(product.originalPrice - product.price).toFixed(2)}
                       </span>
                     </>
                   )}
@@ -352,7 +352,7 @@ const ProductDetail: React.FC = () => {
                   className="w-full bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 hover:scale-105 transition-all duration-300 rounded-xl h-12 text-lg font-semibold"
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
-                  Add to Cart - ${(product.price * quantity).toFixed(2)}
+                  Add to Cart - ₹{(product.price * quantity).toFixed(2)}
                 </Button>
               </div>
             </div>
@@ -389,7 +389,7 @@ const ProductDetail: React.FC = () => {
                         <Star key={i} className={`w-4 h-4 ${i < Math.floor(related.rating) ? 'fill-current' : ''}`} />
                       ))}
                     </div>
-                    <div className="text-xl font-bold text-gray-800">${related.price}</div>
+                    <div className="text-xl font-bold text-gray-800">₹{related.price}</div>
                   </div>
                 </Link>
               ))}

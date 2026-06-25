@@ -151,9 +151,9 @@ const Products: React.FC = () => {
                       className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
                     />
                     <div className="flex justify-between text-sm text-gray-600">
-                      <span>$0</span>
-                      <span className="font-semibold text-orange-500">Up to ${priceRange}</span>
-                      <span>$500+</span>
+                      <span>₹0</span>
+                      <span className="font-semibold text-orange-500">Up to ₹{priceRange}</span>
+                      <span>₹500+</span>
                     </div>
                   </div>
                 </div>
@@ -218,9 +218,9 @@ const Products: React.FC = () => {
                     
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <span className="text-2xl font-bold text-gray-800">${product.price}</span>
+                        <span className="text-2xl font-bold text-gray-800">₹{product.price}</span>
                         {product.originalPrice && (
-                          <span className="text-sm text-gray-400 line-through ml-2">${product.originalPrice}</span>
+                          <span className="text-sm text-gray-400 line-through ml-2">₹{product.originalPrice}</span>
                         )}
                       </div>
                     </div>

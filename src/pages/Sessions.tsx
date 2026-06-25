@@ -162,9 +162,9 @@ export default function SessionsTable() {
                   Last Active
                 </th>
 
-                <th className="p-4 text-center">
+                {/* <th className="p-4 text-center">
                   Actions
-                </th>
+                </th> */}
               </tr>
             </thead>
 
@@ -239,7 +239,7 @@ export default function SessionsTable() {
                       </td>
 
                       {/* ACTIONS */}
-                      <td className="p-4">
+                      {/* <td className="p-4">
                         <div className="flex justify-center">
                           <button
                             onClick={() =>
@@ -255,7 +255,7 @@ export default function SessionsTable() {
                             />
                           </button>
                         </div>
-                      </td>
+                      </td> */}
                     </tr>
                   )
                 )
