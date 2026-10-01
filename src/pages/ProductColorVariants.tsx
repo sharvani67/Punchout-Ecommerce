@@ -6,19 +6,19 @@ import { useNavigate } from "react-router-dom";
 import BASE_URL from "@/Config/Api";
 
 interface Variant {
-id: number;
-product_id: number;
-product_name: string;
-color_name: string;
-color_hex: string;
-price: string;
-stock: number;
-image_url: string;
-images: string[];
+  id: number;
+  product_id: number;
+  product_name: string | null;
+  color_name: string | null;
+  color_hex: string | null;
+  price: string | null;
+  stock: number;
+  image_url: string | null;
+  images: string[];
 }
 
 export default function VariantTable() {
-const navigate = useNavigate();
+const navigate = useNavigate(); 
 
 const [variants, setVariants] = useState<Variant[]>([]);
 const [search, setSearch] = useState("");
@@ -82,20 +82,16 @@ try {
 // SEARCH
 // ===========================
 
-const filteredVariants =
-variants.filter(
-(variant) =>
-variant.product_name
-.toLowerCase()
-.includes(
-search.toLowerCase()
-) ||
-variant.color_name
-.toLowerCase()
-.includes(
-search.toLowerCase()
-)
-);
+const filteredVariants = variants.filter((variant) => {
+  const productName = (variant.product_name ?? "").toLowerCase();
+  const colorName = (variant.color_name ?? "").toLowerCase();
+  const searchText = search.toLowerCase();
+
+  return (
+    productName.includes(searchText) ||
+    colorName.includes(searchText)
+  );
+});
 
 // ===========================
 // PAGINATION
@@ -216,39 +212,36 @@ return (
                       1}
                   </td>
 
-                  <td className="p-4 text-center">
-                    <img
-                      src={`${BASE_URL}${variant.image_url}`}
-                      alt=""
-                      className="w-16 h-16 object-cover rounded-lg border mx-auto"
-                    />
-                  </td>
+                 <td className="p-4 text-center">
+  {variant.image_url ? (
+    <img
+      src={`${BASE_URL}${variant.image_url}`}
+      alt={variant.product_name ?? "Product"}
+      className="w-16 h-16 object-cover rounded-lg border mx-auto"
+    />
+  ) : (
+    <div className="w-16 h-16 rounded-lg border mx-auto flex items-center justify-center text-gray-400 text-xs">
+      No Image
+    </div>
+  )}
+</td>
 
                   <td className="p-4 text-center font-medium">
-                    {
-                      variant.product_name
-                    }
+                     {variant.product_name ?? "N/A"}
                   </td>
 
-                  <td className="p-4 text-center">
-                    <div className="flex items-center justify-center gap-2">
+                 <td className="p-4 text-center">
+  <div className="flex items-center justify-center gap-2">
+    <div
+      className="w-6 h-6 rounded-full border"
+      style={{
+        background: variant.color_hex ?? "#cccccc",
+      }}
+    />
 
-                      <div
-                        className="w-6 h-6 rounded-full border"
-                        style={{
-                          background:
-                            variant.color_hex,
-                        }}
-                      />
-
-                      <span>
-                        {
-                          variant.color_name
-                        }
-                      </span>
-
-                    </div>
-                  </td>
+    <span>{variant.color_name ?? "N/A"}</span>
+  </div>
+</td>
 
                   <td className="p-4 text-center">
                     ₹
