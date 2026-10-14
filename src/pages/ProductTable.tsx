@@ -413,17 +413,33 @@ export default function ProductTable() {
   // DELETE PRODUCT
   // =========================================
 
-  const handleDelete = async (id?: number) => {
-    if (!id) return;
-    if (!confirm("Are you sure you want to delete?")) return;
-    try {
-      await axios.delete(`${BASE_URL}/api/products/${id}`);
-      fetchProducts();
-      alert("Product deleted successfully");
-    } catch (err) {
-      console.error(err);
-    }
-  };
+ const handleDelete = async (id?: number) => {
+  if (!id) return;
+
+  if (
+    !confirm(
+      "⚠️ Deleting this product will also permanently delete ALL its color variants and images.\n\nDo you want to continue?"
+    )
+  )
+    return;
+
+  try {
+    const res = await axios.delete(
+      `${BASE_URL}/api/products/${id}`
+    );
+
+    fetchProducts();
+
+    const count = res.data?.deletedVariants ?? 0;
+
+    alert(
+      `Product deleted successfully ✅\n${count} variant(s) were also deleted.`
+    );
+  } catch (err) {
+    console.error(err);
+    alert("Failed to delete product ❌");
+  }
+};
 
   // =========================================
   // SEARCH
@@ -481,7 +497,7 @@ export default function ProductTable() {
                 <th className="p-4 text-center">Code</th>
                 <th className="p-4 text-center">Category</th>
                 <th className="p-4 text-center">Brand</th>
-                <th className="p-4 text-center">Price</th>
+                {/* <th className="p-4 text-center">Price</th> */}
                 <th className="p-4 text-center">Warranty</th>
                 <th className="p-4 text-center">PDF</th>
                 <th className="p-4 text-center">Actions</th>
@@ -520,9 +536,9 @@ export default function ProductTable() {
                       <td className="p-4 text-center">{p.product_brand}</td>
 
                       {/* PRICE */}
-                      <td className="p-4 font-semibold text-green-600 text-center">
+                      {/* <td className="p-4 font-semibold text-green-600 text-center">
                         ₹{p.price}
-                      </td>
+                      </td> */}
 
                       {/* WARRANTY */}
                       <td className="p-4 text-center">{p.warranty}</td>

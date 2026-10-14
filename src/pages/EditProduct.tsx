@@ -3,6 +3,12 @@ import axios from "axios";
 import AdminNavbar from "@/components/AdminNavbar";
 import { useNavigate, useParams } from "react-router-dom";
 import BASE_URL from "@/Config/Api";
+import VariantsSection, {
+  VariantRow,
+  newVariantRow,
+  validateVariants,
+  saveVariants,
+} from "@/components/VariantsSection";
 
 interface Category {
   id: number;
@@ -15,11 +21,9 @@ interface Product {
   product_category_id: string;
   product_brand: string;
   price: string;
-  // available_stock: string;
   dimensions: string;
   specifications: string;
   weight: string;
-  // color: string;
   discount: string;
   product_description: string;
   warranty: string;
@@ -27,12 +31,9 @@ interface Product {
 
 export default function EditProduct() {
   const navigate = useNavigate();
-
   const { id } = useParams();
 
-  const [categories, setCategories] = useState<
-    Category[]
-  >([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const [form, setForm] = useState<Product>({
     product_name: "",
@@ -40,36 +41,21 @@ export default function EditProduct() {
     product_category_id: "",
     product_brand: "",
     price: "",
-    // available_stock: "",
     dimensions: "",
     specifications: "",
     weight: "",
-    // color: "",
     discount: "",
     product_description: "",
     warranty: "",
   });
 
-  // const [images, setImages] = useState<File[]>(
-  //   []
-  // );
+  const [pdf, setPdf] = useState<File | null>(null);
+  const [existingPdf, setExistingPdf] = useState("");
 
-  const [pdf, setPdf] = useState<File | null>(
-    null
-  );
+  const [variants, setVariants] = useState<VariantRow[]>([]);
+  const [deletedVariantIds, setDeletedVariantIds] = useState<number[]>([]);
 
-  const [preview, setPreview] = useState<
-    string[]
-  >([]);
-
-  // const [existingImages, setExistingImages] =
-  //   useState<string[]>([]);
-
-  const [existingPdf, setExistingPdf] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   // =========================================
   // FETCH DATA
@@ -77,16 +63,13 @@ export default function EditProduct() {
 
   useEffect(() => {
     fetchCategories();
-
     fetchProduct();
-  }, []);
+    fetchVariants();
+  }, [id]);
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(
-        `${BASE_URL}/api/categories`
-      );
-
+      const res = await axios.get(`${BASE_URL}/api/categories`);
       setCategories(res.data);
     } catch (error) {
       console.log(error);
@@ -95,201 +78,115 @@ export default function EditProduct() {
 
   const fetchProduct = async () => {
     try {
-      const res = await axios.get(
-        `${BASE_URL}/api/products/${id}`
-      );
-
+      const res = await axios.get(`${BASE_URL}/api/products/${id}`);
       const data = res.data;
 
       setForm({
-        product_name:
-          data.product_name || "",
-        product_code:
-          data.product_code || "",
-        product_category_id:
-          data.product_category_id || "",
-        product_brand:
-          data.product_brand || "",
+        product_name: data.product_name || "",
+        product_code: data.product_code || "",
+        product_category_id: data.product_category_id
+          ? String(data.product_category_id)
+          : "",
+        product_brand: data.product_brand || "",
         price: data.price || "",
-        // available_stock:
-        //   data.available_stock || "",
-        dimensions:
-          data.dimensions || "",
-        specifications:
-          data.specifications || "",
+        dimensions: data.dimensions || "",
+        specifications: data.specifications || "",
         weight: data.weight || "",
-        // color: data.color || "",
-        discount:
-          data.discount || "",
-        product_description:
-          data.product_description || "",
-        warranty:
-          data.warranty || "",
+        discount: data.discount || "",
+        product_description: data.product_description || "",
+        warranty: data.warranty || "",
       });
 
-      // Existing Images
-      // if (data.product_images) {
-      //   setExistingImages(
-      //     data.product_images.split(",")
-      //   );
-      // }
-
-      // Existing PDF
       if (data.product_details_pdf) {
-        setExistingPdf(
-          data.product_details_pdf
-        );
+        setExistingPdf(data.product_details_pdf);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  // =========================================
-  // HANDLE CHANGE
-  // =========================================
+  const fetchVariants = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/api/products/variants/${id}`);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      | HTMLInputElement
-      | HTMLTextAreaElement
-      | HTMLSelectElement
-    >
-  ) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+      const rows: VariantRow[] = res.data.map((v: any) => ({
+        key: `existing-${v.id}`,
+        id: v.id,
+        color_name: v.color_name || "",
+        color_hex: v.color_hex || "#000000",
+        price: v.price !== null ? String(v.price) : "",
+        stock: v.stock !== null ? String(v.stock) : "",
+        images: [],
+        previews: [],
+        existingImages: (v.images || []).map(
+          (img: string) => `${BASE_URL}${img}`
+        ),
+      }));
 
-  // =========================================
-  // NEW IMAGES
-  // =========================================
-
-  // const handleImageChange = (
-  //   e: React.ChangeEvent<HTMLInputElement>
-  // ) => {
-  //   const files = Array.from(
-  //     e.target.files || []
-  //   );
-
-  //   setImages(files);
-
-  //   const previews = files.map((file) =>
-  //     URL.createObjectURL(file)
-  //   );
-
-  //   setPreview(previews);
-  // };
-
-  // =========================================
-  // NEW PDF
-  // =========================================
-
-  const handlePdfChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-      setPdf(file);
+      setVariants(rows);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   // =========================================
-  // REMOVE IMAGE
+  // HANDLERS
   // =========================================
 
-  // const removeExistingImage = (
-  //   img: string
-  // ) => {
-  //   const updatedImages =
-  //     existingImages.filter(
-  //       (item) => item !== img
-  //     );
-
-  //   setExistingImages(updatedImages);
-  // };
-
-  // =========================================
-  // REMOVE PDF
-  // =========================================
-
-  const removeExistingPdf = () => {
-    setExistingPdf("");
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setPdf(file);
+  };
+
+  const removeExistingPdf = () => setExistingPdf("");
+
   // =========================================
-  // UPDATE PRODUCT
+  // UPDATE PRODUCT + VARIANTS
   // =========================================
 
-  const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const variantError = validateVariants(variants);
+    if (variantError) {
+      alert(variantError);
+      return;
+    }
 
     setLoading(true);
 
     try {
       const data = new FormData();
 
-      // TEXT FIELDS
-      Object.entries(form).forEach(
-        ([key, value]) => {
-          data.append(key, value);
-        }
-      );
+      Object.entries(form).forEach(([key, value]) => {
+        data.append(key, value);
+      });
 
-      // EXISTING IMAGES
-      // data.append(
-      //   "existing_images",
-      //   JSON.stringify(existingImages)
-      // );
+      data.append("existing_pdf", existingPdf);
 
-      // EXISTING PDF
-      data.append(
-        "existing_pdf",
-        existingPdf
-      );
-
-      // NEW IMAGES
-      // images.forEach((img) => {
-      //   data.append(
-      //     "product_images",
-      //     img
-      //   );
-      // });
-
-      // NEW PDF
       if (pdf) {
-        data.append(
-          "product_details_pdf",
-          pdf
-        );
+        data.append("product_details_pdf", pdf);
       }
 
-      await axios.put(
-        `${BASE_URL}/api/products/${id}`,
-        data,
-        {
-          headers: {
-            "Content-Type":
-              "multipart/form-data",
-          },
-        }
-      );
+      await axios.put(`${BASE_URL}/api/products/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      alert(
-        "Product Updated Successfully ✅"
-      );
+      await saveVariants(id as string, variants, deletedVariantIds);
 
+      alert("Product & Variants Updated Successfully ✅");
       navigate("/admin/productstable");
     } catch (error) {
       console.log(error);
-
-      alert(
-        "Error updating product ❌"
-      );
+      alert("Error updating product ❌");
     } finally {
       setLoading(false);
     }
@@ -300,9 +197,7 @@ export default function EditProduct() {
       <AdminNavbar />
 
       <div className="pt-24 px-6 lg:px-12 pb-10">
-        <h1 className="text-3xl font-bold mb-6">
-          Edit Product
-        </h1>
+        <h1 className="text-3xl font-bold mb-6">Edit Product</h1>
 
         <form
           onSubmit={handleSubmit}
@@ -310,10 +205,7 @@ export default function EditProduct() {
         >
           {/* Product Name */}
           <div>
-            <label className="label">
-              Product Name
-            </label>
-
+            <label className="label">Product Name</label>
             <input
               type="text"
               name="product_name"
@@ -326,10 +218,7 @@ export default function EditProduct() {
 
           {/* Product Code */}
           <div>
-            <label className="label">
-              Product Code
-            </label>
-
+            <label className="label">Product Code</label>
             <input
               type="text"
               name="product_code"
@@ -342,28 +231,17 @@ export default function EditProduct() {
 
           {/* Category */}
           <div>
-            <label className="label">
-              Product Category
-            </label>
-
+            <label className="label">Product Category</label>
             <select
               name="product_category_id"
-              value={
-                form.product_category_id
-              }
+              value={form.product_category_id}
               onChange={handleChange}
               className="input"
               required
             >
-              <option value="">
-                Select Category
-              </option>
-
+              <option value="">Select Category</option>
               {categories.map((cat) => (
-                <option
-                  key={cat.id}
-                  value={cat.id}
-                >
+                <option key={cat.id} value={cat.id}>
                   {cat.category_name}
                 </option>
               ))}
@@ -372,10 +250,7 @@ export default function EditProduct() {
 
           {/* Brand */}
           <div>
-            <label className="label">
-              Product Brand
-            </label>
-
+            <label className="label">Product Brand</label>
             <input
               type="text"
               name="product_brand"
@@ -385,44 +260,9 @@ export default function EditProduct() {
             />
           </div>
 
-          {/* Price */}
-          <div>
-            <label className="label">
-              Price
-            </label>
-
-            <input
-              type="number"
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              className="input"
-            />
-          </div>
-
-          {/* Stock */}
-          {/* <div>
-            <label className="label">
-              Available Stock
-            </label>
-
-            <input
-              type="number"
-              name="available_stock"
-              value={
-                form.available_stock
-              }
-              onChange={handleChange}
-              className="input"
-            />
-          </div> */}
-
           {/* Weight */}
           <div>
-            <label className="label">
-              Weight
-            </label>
-
+            <label className="label">Weight</label>
             <input
               type="text"
               name="weight"
@@ -432,27 +272,9 @@ export default function EditProduct() {
             />
           </div>
 
-          {/* Color */}
-          {/* <div>
-            <label className="label">
-              Color
-            </label>
-
-            <input
-              type="text"
-              name="color"
-              value={form.color}
-              onChange={handleChange}
-              className="input"
-            />
-          </div> */}
-
           {/* Discount */}
           <div>
-            <label className="label">
-              Discount
-            </label>
-
+            <label className="label">Discount</label>
             <input
               type="number"
               name="discount"
@@ -464,10 +286,7 @@ export default function EditProduct() {
 
           {/* Warranty */}
           <div>
-            <label className="label">
-              Warranty
-            </label>
-
+            <label className="label">Warranty</label>
             <input
               type="text"
               name="warranty"
@@ -477,77 +296,9 @@ export default function EditProduct() {
             />
           </div>
 
-          {/* Existing Images */}
-          {/* <div className="md:col-span-2 lg:col-span-3">
-            <label className="label">
-              Existing Images
-            </label>
-
-            <div className="flex gap-3 flex-wrap">
-              {existingImages.map(
-                (img, index) => (
-                  <div
-                    key={index}
-                    className="relative"
-                  >
-                    <img
-                      src={`${BASE_URL}/uploads/products/${img}`}
-                      alt=""
-                      className="w-24 h-24 rounded-lg object-cover border"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        removeExistingImage(
-                          img
-                        )
-                      }
-                      className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full text-xs"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )
-              )}
-            </div>
-          </div> */}
-
-          {/* Upload Images */}
-          {/* <div>
-            <label className="label">
-              Upload New Images
-            </label>
-
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={
-                handleImageChange
-              }
-              className="input"
-            />
-
-            <div className="flex gap-2 mt-3 flex-wrap">
-              {preview.map(
-                (img, index) => (
-                  <img
-                    key={index}
-                    src={img}
-                    alt=""
-                    className="w-20 h-20 rounded-lg object-cover border"
-                  />
-                )
-              )}
-            </div>
-          </div> */}
-
           {/* Existing PDF */}
           <div>
-            <label className="label">
-              Existing PDF
-            </label>
+            <label className="label">Existing PDF</label>
 
             {existingPdf ? (
               <div className="flex items-center gap-3">
@@ -562,9 +313,7 @@ export default function EditProduct() {
 
                 <button
                   type="button"
-                  onClick={
-                    removeExistingPdf
-                  }
+                  onClick={removeExistingPdf}
                   className="bg-red-500 text-white px-2 py-1 rounded text-sm"
                 >
                   Delete
@@ -577,10 +326,7 @@ export default function EditProduct() {
 
           {/* Upload PDF */}
           <div>
-            <label className="label">
-              Upload New PDF
-            </label>
-
+            <label className="label">Upload New PDF</label>
             <input
               type="file"
               accept=".pdf"
@@ -591,10 +337,7 @@ export default function EditProduct() {
 
           {/* Dimensions */}
           <div className="md:col-span-2 lg:col-span-3">
-            <label className="label">
-              Dimensions
-            </label>
-
+            <label className="label">Dimensions</label>
             <textarea
               rows={3}
               name="dimensions"
@@ -606,16 +349,11 @@ export default function EditProduct() {
 
           {/* Specifications */}
           <div className="md:col-span-2 lg:col-span-3">
-            <label className="label">
-              Specifications
-            </label>
-
+            <label className="label">Specifications</label>
             <textarea
               rows={4}
               name="specifications"
-              value={
-                form.specifications
-              }
+              value={form.specifications}
               onChange={handleChange}
               className="input"
             />
@@ -623,37 +361,38 @@ export default function EditProduct() {
 
           {/* Description */}
           <div className="md:col-span-2 lg:col-span-3">
-            <label className="label">
-              Product Description
-            </label>
-
+            <label className="label">Product Description</label>
             <textarea
               rows={5}
               name="product_description"
-              value={
-                form.product_description
-              }
+              value={form.product_description}
               onChange={handleChange}
               className="input"
             />
           </div>
+
+          {/* VARIANTS */}
+          <VariantsSection
+            variants={variants}
+            setVariants={setVariants}
+            onRemoveExisting={(vid) =>
+              setDeletedVariantIds((prev) => [...prev, vid])
+            }
+          />
 
           {/* Submit */}
           <div className="md:col-span-2 lg:col-span-3">
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white  hover:scale-105 transition py-3 rounded-xl font-semibold"
+              className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:scale-105 transition py-3 rounded-xl font-semibold"
             >
-              {loading
-                ? "Updating..."
-                : "Update Product"}
+              {loading ? "Updating..." : "Update Product"}
             </button>
           </div>
         </form>
       </div>
 
-      {/* Styles */}
       <style>
         {`
           .input {
@@ -662,13 +401,12 @@ export default function EditProduct() {
             padding: 10px;
             border-radius: 10px;
             outline: none;
+            background: white;
           }
-
           .input:focus {
             border-color: black;
             box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
           }
-
           .label {
             display: block;
             margin-bottom: 6px;

@@ -1339,7 +1339,7 @@ export default function ProductDetails() {
             <div className="mb-6">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-2 mt-5">
                     <button
                       onClick={() => navigate("/admin/productstable")}
                       className="hover:text-pink-600 transition"

@@ -3,6 +3,12 @@ import axios from "axios";
 import AdminNavbar from "@/components/AdminNavbar";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "@/Config/Api";
+import VariantsSection, {
+  VariantRow,
+  newVariantRow,
+  validateVariants,
+  saveVariants,
+} from "@/components/VariantsSection";
 
 interface Category {
   id: number;
@@ -15,11 +21,9 @@ interface Product {
   product_category_id: string;
   product_brand: string;
   price: string;
-  // available_stock: string;
   dimensions: string;
   specifications: string;
   weight: string;
-  // color: string;
   discount: string;
   product_description: string;
   warranty: string;
@@ -36,21 +40,16 @@ export default function ProductForm() {
     product_category_id: "",
     product_brand: "",
     price: "",
-    // available_stock: "",
     dimensions: "",
     specifications: "",
     weight: "",
-    // color: "",
     discount: "",
     product_description: "",
     warranty: "",
   });
 
-  // const [images, setImages] = useState<File[]>([]);
   const [pdf, setPdf] = useState<File | null>(null);
-
-  const [preview, setPreview] = useState<string[]>([]);
-
+  const [variants, setVariants] = useState<VariantRow[]>([newVariantRow()]);
   const [loading, setLoading] = useState(false);
 
   // =========================================
@@ -82,231 +81,106 @@ export default function ProductForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // =========================================
-  // MULTIPLE IMAGES
-  // =========================================
-
-  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const files = Array.from(e.target.files || []);
-
-  //   setImages(files);
-
-  //   const imagePreviews = files.map((file) =>
-  //     URL.createObjectURL(file)
-  //   );
-
-  //   setPreview(imagePreviews);
-  // };
-
-  // =========================================
-  // PDF
-  // =========================================
-
   const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
-    if (file) {
-      setPdf(file);
-    }
+    if (file) setPdf(file);
   };
 
   // =========================================
   // SUBMIT
   // =========================================
 
-const handleSubmit = async (
-  e: React.FormEvent
-) => {
-  e.preventDefault();
-  if (
-  !form.product_name.trim() ||
-  !form.product_code.trim() ||
-  !form.product_brand.trim() ||
-  !form.product_description.trim()
-) {
-  alert("Please fill all mandatory fields (*)");
-  return;
-}
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  setLoading(true);
+    if (
+      !form.product_name.trim() ||
+      !form.product_code.trim() ||
+      !form.product_brand.trim() ||
+      !form.product_description.trim()
+    ) {
+      alert("Please fill all mandatory fields (*)");
+      return;
+    }
 
-  try {
-    const data = new FormData();
+    const variantError = validateVariants(variants);
+    if (variantError) {
+      alert(variantError);
+      return;
+    }
 
-    // =====================================
-    // APPEND FORM DATA
-    // =====================================
+    setLoading(true);
 
-    Object.entries(form).forEach(
-      ([key, value]) => {
+    let productId: number | null = null;
+
+    // ---------- STEP 1: CREATE PRODUCT ----------
+    try {
+      const data = new FormData();
+
+      Object.entries(form).forEach(([key, value]) => {
         data.append(key, value);
+      });
+
+      if (pdf) {
+        data.append("product_details_pdf", pdf);
       }
-    );
 
-    // =====================================
-    // MULTIPLE IMAGES
-    // =====================================
+      const response = await axios.post(`${BASE_URL}/api/products`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-    // images.forEach((img) => {
-    //   data.append("product_images", img);
-    // });
+      productId = response.data.id;
+    } catch (error: any) {
+      console.error("❌ Product Add Error:", error);
 
-    // =====================================
-    // PDF FILE
-    // =====================================
+      if (error.response) {
+        const errorData = error.response.data;
 
-    if (pdf) {
-      data.append(
-        "product_details_pdf",
-        pdf
-      );
-    }
-
-    console.log(
-      "🚀 Sending Product Data..."
-    );
-
-    console.log("Form Data:", form);
-
-    // console.log("Images:", images);
-
-    console.log("PDF:", pdf);
-
-    // =====================================
-    // API CALL
-    // =====================================
-
-    const response = await axios.post(
-      `${BASE_URL}/api/products`,
-      data,
-      {
-        headers: {
-          "Content-Type":
-            "multipart/form-data",
-        },
-      }
-    );
-
-    console.log(
-      "✅ Product Added Successfully:",
-      response.data
-    );
-
-    alert("Product Added Successfully ✅");
-
-    navigate("/admin/productstable");
-  } catch (error: any) {
-    console.error(
-      "❌ Product Add Error:",
-      error
-    );
-
-    // =====================================
-    // SERVER RESPONSE ERROR
-    // =====================================
-
-    if (error.response) {
-      console.error(
-        "Status:",
-        error.response.status
-      );
-
-      console.error(
-        "Response Data:",
-        error.response.data
-      );
-
-      console.error(
-        "Headers:",
-        error.response.headers
-      );
-
-      const errorData =
-        error.response.data;
-
-      // =====================================
-      // DUPLICATE ENTRY ERROR
-      // =====================================
-
-      if (
-        errorData?.code ===
-        "ER_DUP_ENTRY"
-      ) {
-        // PRODUCT CODE DUPLICATE
-        if (
-          errorData.sqlMessage?.includes(
-            "product_code"
-          )
-        ) {
-          alert(
-            "Product Code already exists ❌"
-          );
+        if (errorData?.code === "ER_DUP_ENTRY") {
+          if (errorData.sqlMessage?.includes("product_code")) {
+            alert("Product Code already exists ❌");
+          } else {
+            alert(errorData.sqlMessage || "Duplicate entry found ❌");
+          }
+        } else {
+          alert(errorData?.message || "Server Error ❌");
         }
-
-        // OTHER DUPLICATES
-        else {
-          alert(
-            errorData.sqlMessage ||
-              "Duplicate entry found ❌"
-          );
-        }
+      } else if (error.request) {
+        alert("No response from server ❌");
+      } else {
+        alert(error.message || "Something went wrong ❌");
       }
 
-      // =====================================
-      // OTHER SERVER ERRORS
-      // =====================================
+      setLoading(false);
+      return;
+    }
 
-      else {
-        alert(
-          errorData?.message ||
-            "Server Error ❌"
-        );
+    // ---------- STEP 2: CREATE VARIANTS ----------
+    try {
+      if (productId && variants.length > 0) {
+        await saveVariants(productId, variants);
       }
-    }
 
-    // =====================================
-    // NO RESPONSE FROM SERVER
-    // =====================================
-
-    else if (error.request) {
-      console.error(
-        "No response received:",
-        error.request
-      );
-
+      alert("Product & Variants Added Successfully ✅");
+      navigate("/admin/productstable");
+    } catch (error) {
+      console.error("❌ Variant Add Error:", error);
       alert(
-        "No response from server ❌"
+        "Product saved, but some variants failed ❌. Please check and re-save variants."
       );
+      // Product exists now, so go to edit page to fix variants
+      navigate(`/admin/edit-product/${productId}`);
+    } finally {
+      setLoading(false);
     }
-
-    // =====================================
-    // OTHER ERRORS
-    // =====================================
-
-    else {
-      console.error(
-        "Error Message:",
-        error.message
-      );
-
-      alert(
-        error.message ||
-          "Something went wrong ❌"
-      );
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <>
       <AdminNavbar />
 
       <div className="pt-24 px-6 lg:px-12 pb-10">
-        <h1 className="text-3xl font-bold mb-6">
-          Add Product
-        </h1>
+        <h1 className="text-3xl font-bold mb-6">Add Product</h1>
 
         <form
           onSubmit={handleSubmit}
@@ -315,41 +189,38 @@ const handleSubmit = async (
           {/* Product Name */}
           <div>
             <label className="label">
-  Product Name <span className="text-red-500">*</span>
-</label>
-
-<input
-  type="text"
-  name="product_name"
-  value={form.product_name}
-  onChange={handleChange}
-  className="input"
-  required
-/>
+              Product Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="product_name"
+              value={form.product_name}
+              onChange={handleChange}
+              className="input"
+              required
+            />
           </div>
 
           {/* Product Code */}
           <div>
-           <label className="label">
-  Product Code <span className="text-red-500">*</span>
-</label>
-
-<input
-  type="text"
-  name="product_code"
-  value={form.product_code}
-  onChange={handleChange}
-  className="input"
-  required
-/>
+            <label className="label">
+              Product Code <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="product_code"
+              value={form.product_code}
+              onChange={handleChange}
+              className="input"
+              required
+            />
           </div>
 
           {/* Category */}
           <div>
-           <label className="label">
-  Product Category <span className="text-red-500">*</span>
-</label>
-
+            <label className="label">
+              Product Category <span className="text-red-500">*</span>
+            </label>
             <select
               name="product_category_id"
               value={form.product_category_id}
@@ -358,7 +229,6 @@ const handleSubmit = async (
               required
             >
               <option value="">Select Category</option>
-
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.category_name}
@@ -369,54 +239,22 @@ const handleSubmit = async (
 
           {/* Brand */}
           <div>
-          <label className="label">
-  Product Brand <span className="text-red-500">*</span>
-</label>
-
-<input
-  type="text"
-  name="product_brand"
-  value={form.product_brand}
-  onChange={handleChange}
-  className="input"
-  required
-/>
-          </div>
-
-          {/* Price */}
-          {/* <div>
-           <label className="label">
-  Price <span className="text-red-500">*</span>
-</label>
-
-<input
-  type="number"
-  name="price"
-  value={form.price}
-  onChange={handleChange}
-  className="input"
-  min="1"
-  required
-/>
-          </div> */}
-
-          {/* Stock */}
-          {/* <div>
-            <label className="label">Available Stock</label>
-
+            <label className="label">
+              Product Brand <span className="text-red-500">*</span>
+            </label>
             <input
-              type="number"
-              name="available_stock"
-              value={form.available_stock}
+              type="text"
+              name="product_brand"
+              value={form.product_brand}
               onChange={handleChange}
               className="input"
+              required
             />
-          </div> */}
+          </div>
 
           {/* Weight */}
           <div>
             <label className="label">Weight</label>
-
             <input
               type="text"
               name="weight"
@@ -426,23 +264,9 @@ const handleSubmit = async (
             />
           </div>
 
-          {/* Color */}
-          {/* <div>
-            <label className="label">Color</label>
-
-            <input
-              type="text"
-              name="color"
-              value={form.color}
-              onChange={handleChange}
-              className="input"
-            />
-          </div> */}
-
           {/* Discount */}
           <div>
             <label className="label">Discount</label>
-
             <input
               type="number"
               name="discount"
@@ -455,7 +279,6 @@ const handleSubmit = async (
           {/* Warranty */}
           <div>
             <label className="label">Warranty</label>
-
             <input
               type="text"
               name="warranty"
@@ -465,38 +288,9 @@ const handleSubmit = async (
             />
           </div>
 
-          {/* Multiple Images */}
-          {/* <div>
-            <label className="label">
-              Product Images
-            </label>
-
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageChange}
-              className="input"
-            />
-
-            <div className="flex gap-2 mt-3 flex-wrap">
-              {preview.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt=""
-                  className="w-20 h-20 rounded-lg object-cover border"
-                />
-              ))}
-            </div>
-          </div> */}
-
           {/* PDF */}
           <div>
-            <label className="label">
-              Product Details PDF
-            </label>
-
+            <label className="label">Product Details PDF</label>
             <input
               type="file"
               accept=".pdf"
@@ -508,7 +302,6 @@ const handleSubmit = async (
           {/* Dimensions */}
           <div className="md:col-span-2 lg:col-span-3">
             <label className="label">Dimensions</label>
-
             <textarea
               rows={3}
               name="dimensions"
@@ -521,7 +314,6 @@ const handleSubmit = async (
           {/* Specifications */}
           <div className="md:col-span-2 lg:col-span-3">
             <label className="label">Specifications</label>
-
             <textarea
               rows={4}
               name="specifications"
@@ -534,25 +326,27 @@ const handleSubmit = async (
           {/* Description */}
           <div className="md:col-span-2 lg:col-span-3">
             <label className="label">
-  Product Description <span className="text-red-500">*</span>
-</label>
-
-<textarea
-  rows={5}
-  name="product_description"
-  value={form.product_description}
-  onChange={handleChange}
-  className="input"
-  required
-/>
+              Product Description <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              rows={5}
+              name="product_description"
+              value={form.product_description}
+              onChange={handleChange}
+              className="input"
+              required
+            />
           </div>
+
+          {/* VARIANTS */}
+          <VariantsSection variants={variants} setVariants={setVariants} />
 
           {/* Submit */}
           <div className="md:col-span-2 lg:col-span-3">
             <button
               type="submit"
               disabled={loading}
-              className=" w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white  hover:scale-105 transition py-3 rounded-xl font-semibold "
+              className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:scale-105 transition py-3 rounded-xl font-semibold"
             >
               {loading ? "Adding..." : "Add Product"}
             </button>
@@ -560,7 +354,6 @@ const handleSubmit = async (
         </form>
       </div>
 
-      {/* Styles */}
       <style>
         {`
           .input {
@@ -569,13 +362,12 @@ const handleSubmit = async (
             padding: 10px;
             border-radius: 10px;
             outline: none;
+            background: white;
           }
-
           .input:focus {
             border-color: black;
             box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
           }
-
           .label {
             display: block;
             margin-bottom: 6px;

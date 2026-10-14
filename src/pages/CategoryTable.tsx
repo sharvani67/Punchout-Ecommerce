@@ -47,27 +47,33 @@ export default function CategoryTable() {
   // =========================================
 
   const handleDelete = async (id?: number) => {
-    if (!id) return;
+  if (!id) return;
 
-    if (
-      !confirm(
-        "Are you sure you want to delete this category?"
-      )
+  if (
+    !confirm(
+      "⚠️ Deleting this category will also permanently delete ALL its products and their color variants.\n\nDo you want to continue?"
     )
-      return;
+  )
+    return;
 
-    try {
-      await axios.delete(
-        `${BASE_URL}/api/categories/${id}`
-      );
+  try {
+    const res = await axios.delete(
+      `${BASE_URL}/api/categories/${id}`
+    );
 
-      fetchCategories();
+    fetchCategories();
+    setCurrentPage(1);
 
-      alert("Category deleted successfully");
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    const count = res.data?.deletedProducts ?? 0;
+
+    alert(
+      `Category deleted successfully ✅\n${count} product(s) and their variants were also deleted.`
+    );
+  } catch (err) {
+    console.error(err);
+    alert("Failed to delete category ❌");
+  }
+};
 
   // =========================================
   // SEARCH
